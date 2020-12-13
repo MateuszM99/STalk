@@ -21,7 +21,7 @@ namespace EntityFramework.Factories
 
             var builder = new DbContextOptionsBuilder<MainDbContext>();
             var connectionString = configuration.GetConnectionString("STalkConnectionString");
-            builder.UseSqlServer();
+            builder.UseSqlServer(connectionString);
 
             return new MainDbContext(builder.Options);
         }
