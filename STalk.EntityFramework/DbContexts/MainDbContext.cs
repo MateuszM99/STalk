@@ -28,6 +28,9 @@ namespace EntityFramework.DbContexts
             modelBuilder.ApplyConfiguration(new ConversationConfiguration());
             modelBuilder.ApplyConfiguration(new MessageConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new FileConfiguration());
+            modelBuilder.ApplyConfiguration(new ContactListConfiguration());
+            modelBuilder.ApplyConfiguration(new ContactListUserConfiguration());
         }
     }
 }

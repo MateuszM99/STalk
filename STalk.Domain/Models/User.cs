@@ -7,9 +7,12 @@ namespace Domain.Models
 {
     public class User : IdentityUser
     {
-        
-        public virtual List<Message> Messages { get; set; }
+        public long FileAvatarId { get; set; }
 
+        public virtual ContactList ContactList { get; set; }
+
+        public virtual List<File> Files { get; set; }
+        public virtual List<Message> Messages { get; set; }
         public virtual List<Conversation> Conversations { get; set; }
         public virtual List<UserConversation> UserConversations { get; set; }
     }

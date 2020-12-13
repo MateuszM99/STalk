@@ -25,6 +25,8 @@ namespace EntityFramework.Configurations
                       .HasForeignKey(uc => uc.UserId),
                 y => y.HasKey(z => z.Id)
             );
+            builder.HasMany(x => x.Files).WithOne(x => x.User).HasForeignKey(x => x.UserId);
+            builder.HasOne(x => x.ContactList).WithOne(x => x.User).HasForeignKey<ContactList>(x => x.UserId);
         }
     }
 }

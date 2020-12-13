@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20201213171441_Init")]
+    [Migration("20201213181752_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,47 @@ namespace EntityFramework.Migrations
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
+
+            modelBuilder.Entity("Domain.Models.ContactList", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("ContactList");
+                });
+
+            modelBuilder.Entity("Domain.Models.ContactListUser", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityColumn();
+
+                    b.Property<long>("ContactListId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactListId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ContactListUser");
+                });
 
             modelBuilder.Entity("Domain.Models.Conversation", b =>
                 {
@@ -31,6 +72,29 @@ namespace EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("Domain.Models.File", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityColumn();
+
+                    b.Property<byte[]>("FileContent")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("FileExtension")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("File");
                 });
 
             modelBuilder.Entity("Domain.Models.Message", b =>
@@ -75,6 +139,9 @@ namespace EntityFramework.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<long>("FileAvatarId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -275,6 +342,41 @@ namespace EntityFramework.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Domain.Models.ContactList", b =>
+                {
+                    b.HasOne("Domain.Models.User", "User")
+                        .WithOne("ContactList")
+                        .HasForeignKey("Domain.Models.ContactList", "UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.ContactListUser", b =>
+                {
+                    b.HasOne("Domain.Models.ContactList", "ContactList")
+                        .WithMany("Contacts")
+                        .HasForeignKey("ContactListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("ContactList");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.File", b =>
+                {
+                    b.HasOne("Domain.Models.User", "User")
+                        .WithMany("Files")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Models.Message", b =>
                 {
                     b.HasOne("Domain.Models.Conversation", "Conversation")
@@ -360,6 +462,11 @@ namespace EntityFramework.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Models.ContactList", b =>
+                {
+                    b.Navigation("Contacts");
+                });
+
             modelBuilder.Entity("Domain.Models.Conversation", b =>
                 {
                     b.Navigation("Messages");
@@ -369,6 +476,10 @@ namespace EntityFramework.Migrations
 
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
+                    b.Navigation("ContactList");
+
+                    b.Navigation("Files");
+
                     b.Navigation("Messages");
 
                     b.Navigation("UserConversations");
