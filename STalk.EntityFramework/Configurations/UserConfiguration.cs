@@ -11,7 +11,7 @@ namespace EntityFramework.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(x => x.Id);               
             builder.HasMany(x => x.Messages).WithOne(x => x.User).HasForeignKey(x => x.UserId);
             builder.HasMany(x => x.Conversations).WithMany(x => x.Users).UsingEntity<UserConversation>
             (
