@@ -48,6 +48,7 @@ namespace STalk
             });
 
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
             services.AddAuthentication(options =>
             {

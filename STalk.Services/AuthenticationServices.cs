@@ -18,9 +18,11 @@ namespace Services
     public class AuthenticationServices : IAuthenticationServices
     {
         private readonly IConfiguration _configuration;
-        public AuthenticationServices(IConfiguration configuration)
+        private readonly IEmailSender emailSender;
+        public AuthenticationServices(IConfiguration configuration,IEmailSender emailSender)
         {
             _configuration = configuration;
+            this.emailSender = emailSender;
         }
         public async Task<SignUpResponse> SignUp(SignUpModel model,UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -47,11 +49,13 @@ namespace Services
             if (!result.Succeeded)
                 return new SignUpResponse { ResponseStatus = Status.Error, Message = "User creation failed! Please check user details and try again." };
 
-            /*var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = Url.Action("ConfirmEmail", "Authenticate", new { userId = user.Id, token = token }, Request.Scheme);
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var baseUrl = "http://localhost:44338/api/authentication/confirmEmail";
+            var confirmationLink = baseUrl + String.Format("/?userId={0}&token={1}", user.Id, token);
             string message = $"Click this link to confirm your account: {confirmationLink}";
 
-            await emailSender.SendEmailAsync(model.Email, "Confirm your account", message);*/
+            await emailSender.SendEmailAsync(model.Email, "Confirm your account", message);
+
             return new SignUpResponse { ResponseStatus = Status.Success, Message = "User created succesfully." };
         }
         public async Task<SignInResponse> SignIn(SignInModel model, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
