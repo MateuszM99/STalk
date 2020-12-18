@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\STalk.Application\Application.csproj" />
+    <ProjectReference Include="..\STalk.EntityFramework\EntityFramework.csproj" />
     <ProjectReference Include="..\STalk.IServices\IServices.csproj" />
   </ItemGroup>
 

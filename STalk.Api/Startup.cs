@@ -49,6 +49,7 @@ namespace STalk
 
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IContactsServices, ContactsServices>();
 
             services.AddAuthentication(options =>
             {
