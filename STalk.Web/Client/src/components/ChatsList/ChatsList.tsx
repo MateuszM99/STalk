@@ -6,16 +6,16 @@ import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import MessageIcon from '@material-ui/icons/Message';
 import CachedIcon from '@material-ui/icons/Cached';
+import PeopleIcon from '@material-ui/icons/People';
 
 function ChatsList() {
     return (
         <div className="col-md-2 border-right">
-            <div className="settings-tray">
-            <img className="profile-image" src="https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg" alt="Profile img"/>
-                <span className="settings-tray--right">
-                    <CachedIcon/>
-                    <MessageIcon/>
-                    <MenuIcon/>
+            <div className="conversations-info border-bottom">
+                <PeopleIcon/>
+                <span>
+                <h6>Friends</h6>
+                <p>206 conversations</p>
                 </span>
             </div>
             <div className="search-box">

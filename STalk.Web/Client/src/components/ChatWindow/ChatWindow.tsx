@@ -6,7 +6,7 @@ import ReplyMessage from './ReplyMessage';
 
 function ChatWindow() {
     return (
-        <div className="col-md-10">
+        <div className="col-md-8">
             <div className="settings-tray">
                 <div className="friend-drawer no-gutters friend-drawer--grey">
                     <img className="profile-image" src="https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg" alt=""/>
