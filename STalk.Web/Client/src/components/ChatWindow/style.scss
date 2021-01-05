@@ -63,20 +63,10 @@ $blue: #285d80;
     padding: 10px 15px;
     align-items: center;
     margin-top: 19px;
-    bottom: 0;
     
     input {
       margin: 0 10px;
-      padding: 6px 2px;
-    }
-    
-    i {
-      color: grey;
-      font-size: 30px;
-      vertical-align: middle;
-      
-      &:last-of-type {
-        margin-left: 25px;
-      }
+      padding-left: 15px;
+      padding-right: 7px;
     }
   }
