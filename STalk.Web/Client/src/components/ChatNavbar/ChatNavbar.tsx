@@ -3,6 +3,7 @@ import './style.scss'
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
+import { Link } from 'react-router-dom';
 
 function ChatNavbar() {
     return (
@@ -15,18 +16,24 @@ function ChatNavbar() {
                     </div>
             </div>
             <div className="nav__tabs__display">
-                <div>
-                    <ChatBubbleIcon/>
-                    <p>Conversations</p>
-                </div>
+                <Link to={`/sTalk/chat`}>
+                    <div>
+                        <ChatBubbleIcon/>
+                        <p>Conversations</p>
+                    </div>
+                </Link>
+                <Link to={`/sTalk/friends`}>
                 <div>
                     <PeopleIcon/>
                     <p>Friends</p>
                 </div>
+                </Link>
+                <Link to={`/sTalk/profile`}>
                 <div>
                     <PersonIcon/>
                     <p>Profile</p>
                 </div>
+                </Link>
             </div>
         </div>
     )

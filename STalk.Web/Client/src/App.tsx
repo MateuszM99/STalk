@@ -4,7 +4,7 @@ import Layout from './components/Layout';
 import Home from './components/Home';
 import Counter from './components/Counter';
 import FetchData from './components/FetchData';
-import MainChat from './components/MainChat/MainChat';
+import MainWindow from './components/MainWindow/MainWindow';
 import SignIn from './components/SignIn/SignIn';
 import SignUp from './components/SignUp/SignUp';
 
@@ -12,10 +12,16 @@ import './custom.css'
 
 export default () => (
     <div style={{height:"100vh"}}>
-        <Route exact path="/" component={SignIn}/>
-        <Route exact path="/signUp" component={SignUp}/>
-        <Route exact path='/chat' component={MainChat} />
-        <Route path='/counter' component={Counter} />
-        <Route path='/fetch-data/:startDateIndex?' component={FetchData} />
+        <Route exact path="/signUp" >
+            <SignUp/>
+        </Route>
+        <Route exact path="/signIn" >
+            <SignIn/>
+        </Route>
+        <Route path='/sTalk'>
+            <MainWindow/>
+        </Route>
+        <Route path="/">
+        </Route>
     </div>
 );
