@@ -72,6 +72,46 @@ namespace STalk.Api.Controllers
         }
 
         [HttpPost]
+        [Route("usernameChange")]
+        public async Task<IActionResult> ChangeUsername(UsernameChangeViewModel usernameChangeViewModel)
+        {
+            if (usernameChangeViewModel != null)
+            {
+                var user = await userManager.GetUserAsync(HttpContext.User);
+                AccountResponse response = await accountServices.ChangeUsernameAsync(user, usernameChangeViewModel);
+                if (response.ResponseStatus == Status.Success)
+                {
+                    return Ok(response.Message);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, response.Message);
+                }
+            }
+            return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
+        [HttpPost]
+        [Route("profileImageChange")]
+        public async Task<IActionResult> ChangeProfileImage(ProfileImageChangeViewModel profileImageChangeViewModel)
+        {
+            if(profileImageChangeViewModel != null)
+            {
+                var user = await userManager.GetUserAsync(HttpContext.User);
+                AccountResponse response = await accountServices.ChangeProfileImageAsync(user, profileImageChangeViewModel);
+                if (response.ResponseStatus == Status.Success)
+                {
+                    return Ok(response.Message);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, response.Message);
+                }
+            }
+            return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
+        [HttpPost]
         [Route("addToContacts")]
         public async Task<IActionResult> SendAddToContactsRequest([FromBody] string username)
         {

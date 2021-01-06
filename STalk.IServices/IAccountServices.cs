@@ -15,6 +15,6 @@ namespace IServices
         Task<AccountResponse> ChangePasswordAsync(User user,PasswordChangeViewModel passwordChangeViewModel);
         Task<AccountResponse> ChangeUsernameAsync(User user,UsernameChangeViewModel usernameChangeViewModel);
         Task<AccountResponse> ChangeEmailAsync(User user,EmailChangeViewModel emailChangeViewModel);
-        Task<AccountResponse> ChangeProfileImageAsync();        
+        Task<AccountResponse> ChangeProfileImageAsync(User user,ProfileImageChangeViewModel profileImageChangeViewModel);        
     }
 }

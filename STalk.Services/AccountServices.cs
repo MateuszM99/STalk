@@ -4,9 +4,11 @@ using Application.ViewModels;
 using Domain.Models;
 using EntityFramework.DbContexts;
 using IServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,9 +63,28 @@ namespace Services
             return null;
         }
 
-        public Task<AccountResponse> ChangeProfileImageAsync()
+        public async Task<AccountResponse> ChangeProfileImageAsync(User user,ProfileImageChangeViewModel profileImageChangeViewModel)
         {
-            throw new NotImplementedException();
+           if(user != null)
+           {
+                if(profileImageChangeViewModel.profileImage != null)
+                {
+                    var fileExtension = Path.GetExtension(profileImageChangeViewModel.profileImage.FileName);
+                    var fileContent = convertFormFileToByteArray(profileImageChangeViewModel.profileImage);
+                    Domain.Models.File profileImage = new Domain.Models.File
+                    {
+                        FileExtension = fileExtension,
+                        FileContent = fileContent,
+                        User = user,
+                        UserId = user.Id
+                    };
+
+                    await appDb.Files.AddAsync(profileImage);                   
+                    await appDb.SaveChangesAsync();
+                    return new AccountResponse { ResponseStatus = Status.Success, Message = "Succesfully changed profile image" };
+                }
+           }
+           return new AccountResponse { ResponseStatus = Status.Error, Message = "User not found" };
         }
 
         public async Task<AccountResponse> ChangeUsernameAsync(User user,UsernameChangeViewModel usernameChangeViewModel)
@@ -121,6 +142,23 @@ namespace Services
             }
             return new AccountResponse { ResponseStatus = Status.Error, Message = "User not found" };
         }
+
+        private byte[] convertFormFileToByteArray(IFormFile file)
+        {            
+            if (file.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    file.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    string s = Convert.ToBase64String(fileBytes);
+                    // act on the Base64 data
+                    return fileBytes;
+                }
+            }
+            return null;
+        }
+
 
     }
 }

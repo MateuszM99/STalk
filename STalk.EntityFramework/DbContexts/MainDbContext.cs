@@ -22,6 +22,7 @@ namespace EntityFramework.DbContexts
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<AddToContactRequest> AddToContactRequests { get; set; }
         public DbSet<ContactList> ContactLists { get; set; }
+        public DbSet<File> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
