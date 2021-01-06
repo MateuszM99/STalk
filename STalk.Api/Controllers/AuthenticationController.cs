@@ -111,7 +111,7 @@ namespace STalk.Api.Controllers
         [Route("sendPasswordReset")]
         public async Task<IActionResult> SendPasswordResetLink([FromBody]string email)
         {
-            AccountResponse response = await accountServices.RetrievePassword(email);
+            AccountResponse response = await accountServices.RetrievePasswordAsync(email);
 
             if(response.ResponseStatus == Status.Success)
             {
@@ -127,7 +127,7 @@ namespace STalk.Api.Controllers
         [Route("resetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel resetPasswordViewModel)
         {
-            AccountResponse response = await accountServices.ResetPassword(resetPasswordViewModel);
+            AccountResponse response = await accountServices.ResetPasswordAsync(resetPasswordViewModel);
             
             if (response.ResponseStatus == Status.Success)
             {

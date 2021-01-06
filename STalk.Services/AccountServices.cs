@@ -23,27 +23,75 @@ namespace Services
             this.userManager = userManager;
             this.emailSender = emailSender;
     }
-        public Task<AccountResponse> ChangeEmail()
+        public async Task<AccountResponse> ChangeEmailAsync(User user,EmailChangeViewModel emailChangeViewModel)
+        {
+            if(user != null)
+            {
+                if(emailChangeViewModel.Email != null && emailChangeViewModel.ConfirmEmail != null)
+                {
+                    if (emailChangeViewModel.Email.Equals(emailChangeViewModel.ConfirmEmail))
+                    {
+                        var emailChangeToken = await userManager.GenerateChangeEmailTokenAsync(user, emailChangeViewModel.Email);
+                        var baseUrl = "http://localhost:44338/api/user/emailChangeConfirm";                        
+                        string emailCallbackUrl = baseUrl + String.Format("/?userId={0}&email={1}&token={2}", user.Id,emailChangeViewModel.Email, emailChangeToken);
+                        string message = "Click on the link to confirm email change: " + emailCallbackUrl; 
+                        await emailSender.SendEmailAsync(user.Email,"Email change link",message);
+                        return new AccountResponse { ResponseStatus = Status.Success, Message = "The email change link was sent to your email" };
+                    }
+                    return new AccountResponse { ResponseStatus = Status.Error, Message = "Emails do not match" };
+                }
+                return new AccountResponse { ResponseStatus = Status.Error, Message = "Request is missing some data" };
+            }
+            return new AccountResponse { ResponseStatus = Status.Error, Message = "User not found" };
+        }
+
+        public async Task<AccountResponse> ChangePasswordAsync(User user,PasswordChangeViewModel passwordChangeViewModel)
+        {
+            if(user != null)
+            {
+                if(passwordChangeViewModel.Password != null && passwordChangeViewModel.ConfirmPassword != null)
+                {
+                    if (passwordChangeViewModel.Password.Equals(passwordChangeViewModel.ConfirmPassword))
+                    {
+                        var passwordChangeToken = await userManager.GeneratePasswordResetTokenAsync(user);
+
+                    }
+                }
+            }
+            return null;
+        }
+
+        public Task<AccountResponse> ChangeProfileImageAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<AccountResponse> ChangePassword()
+        public async Task<AccountResponse> ChangeUsernameAsync(User user,UsernameChangeViewModel usernameChangeViewModel)
         {
-            throw new NotImplementedException();
+            if(user != null)
+            {
+                if(usernameChangeViewModel.Username != null && usernameChangeViewModel.ConfirmUsername != null)
+                {
+                    if (usernameChangeViewModel.Username.Equals(usernameChangeViewModel.ConfirmUsername))
+                    {
+                        IdentityResult result = await userManager.SetUserNameAsync(user, usernameChangeViewModel.Username);
+                        if (result.Succeeded)
+                        {
+                            return new AccountResponse { ResponseStatus = Status.Success, Message = "The username was changed" };
+                        }
+                        else
+                        {
+                            return new AccountResponse { ResponseStatus = Status.Error, Message = "Username could not be changed" };
+                        }
+                    }
+                    return new AccountResponse { ResponseStatus = Status.Error, Message = "Usernames do not match" };
+                }
+                return new AccountResponse { ResponseStatus = Status.Error, Message = "Request is missing some data" };
+            }
+            return new AccountResponse { ResponseStatus = Status.Error, Message = "User not found" };
         }
 
-        public Task<AccountResponse> ChangeProfileImage()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<AccountResponse> ChangeUsername()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<AccountResponse> RetrievePassword(string email)
+        public async Task<AccountResponse> RetrievePasswordAsync(string email)
         {
             var user = await userManager.FindByEmailAsync(email);
             if(user != null)
@@ -59,7 +107,7 @@ namespace Services
             return new AccountResponse { ResponseStatus = Status.Error, Message = "No user with that email was found" };
         }
 
-        public async Task<AccountResponse> ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
+        public async Task<AccountResponse> ResetPasswordAsync(ResetPasswordViewModel resetPasswordViewModel)
         {
             var user = await userManager.FindByIdAsync(resetPasswordViewModel.UserId);
             if(user != null)
