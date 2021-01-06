@@ -19,19 +19,19 @@ function ChatNavbar() {
             <div className="nav__tabs__display">
                 <Link to={`/sTalk/chat`}>
                     <div>
-                        <ChatBubbleIcon/>
+                        <ChatBubbleIcon style={{color : 'white'}}/>
                         <p>Conversations</p>
                     </div>
                 </Link>
                 <Link to={`/sTalk/friends`}>
                 <div>
-                    <PeopleIcon/>
+                    <PeopleIcon style={{color : 'white'}}/>
                     <p>Friends</p>
                 </div>
                 </Link>
                 <Link to={`/sTalk/profile`}>
                 <div>
-                    <PersonIcon/>
+                    <PersonIcon style={{color : 'white'}}/>
                     <p>Profile</p>
                 </div>
                 </Link>

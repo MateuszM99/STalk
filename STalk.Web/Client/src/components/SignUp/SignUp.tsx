@@ -7,9 +7,9 @@ import {Formik,Form, yupToFormErrors,Field} from 'formik'
 function SignUp() {
     return (
         <div className="limiter">
-		<div className="container-login100">
-			<div className="wrap-login100">
-				<div className="login100-pic js-tilt" data-tilt>
+		<div className="container-signUp">
+			<div className="wrap-signUp">
+				<div className="signUp-pic js-tilt" data-tilt>
 					<img src="/img-01.png" alt="IMG"/>
 				</div>
 				<Formik
@@ -25,39 +25,27 @@ function SignUp() {
                 >
                 {({ errors, touched,isSubmitting,status}) => (
                     <Form>
-                        <span className="login100-form-title">
+                        <span className="signUp-form-title">
                             Sign up
                         </span>
                         <h6>Email</h6>
                         <div className="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
                             <input className="input100" type="text" name="email" placeholder="Email"/>
-                            <span className="focus-input100"></span>
-                            <span className="symbol-input100">                
-                            </span>
                         </div>
                         <h6>Username</h6>
                         <div className="wrap-input100 validate-input" data-validate = "Password is required">
                             <input className="input100" type="password" name="pass" placeholder="Password"/>
-                            <span className="focus-input100"></span>
-                            <span className="symbol-input100">                               
-                            </span>
                         </div>
                         <h6>Password</h6>
                         <div className="wrap-input100 validate-input" data-validate = "Password is required">                           
                             <input className="input100" type="password" name="pass" placeholder="Password"/>
-                            <span className="focus-input100"></span>
-                            <span className="symbol-input100">                               
-                            </span>
                         </div>
                         <h6>Confirm Password</h6>
                         <div className="wrap-input100 validate-input" data-validate = "Password is required">
                             <input className="input100" type="password" name="pass" placeholder="Password"/>
-                            <span className="focus-input100"></span>
-                            <span className="symbol-input100">                               
-                            </span>
                         </div>
-                        <div className="container-login100-form-btn">
-                            <button className="login100-form-btn">
+                        <div className="container-signUp-form-btn">
+                            <button className="signUp-form-btn">
                                 Sign up
                             </button>
                         </div>

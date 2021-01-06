@@ -24,6 +24,13 @@
       box-sizing: border-box;
   }
   
+  .validation{
+    font-size: 12px;
+    color: grey;
+    justify-self: center;
+  }
+
+
   a {
       font-family: Poppins-Regular;
       font-size: 14px;
@@ -42,7 +49,7 @@
   
   a:hover {
       text-decoration: none;
-    color: #4a72aa;
+    color:#285d80;
   }
   
   p {
@@ -104,7 +111,7 @@
     margin: 0 auto;
   }
   
-  .container-signUp {
+  .container-forgot {
     width: 100%;  
     min-height: 100vh;
     display: -webkit-box;
@@ -116,11 +123,11 @@
     justify-content: center;
     align-items: center;
     padding: 15px;
-    background-color: #285d80;
+    background-color:#285d80;
   }
   
-  .wrap-signUp {
-    width: 960px;
+  .wrap-forgot {
+    width: 700px;
     background: #fff;
     border-radius: 10px;
     overflow: hidden;
@@ -131,28 +138,11 @@
     display: -ms-flexbox;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 77px 130px 33px 95px;
+    justify-content: center;
+    padding: 100px 0px 20px 0px;
   }
-  
-  /*------------------------------------------------------------------
-  [  ]*/
-  .signUp-pic {
-    width: 316px;
-  }
-  
-  .signUp-pic img {
-    max-width: 100%;
-  }
-  
-  
-  /*------------------------------------------------------------------
-  [  ]*/
-  .signUp-form {
-    width: 290px;
-  }
-  
-  .signUp-form-title {
+
+   .forgot-form-title {
     font-family: Poppins-Bold;
     font-size: 24px;
     color: #333333;
@@ -164,8 +154,6 @@
     padding-bottom: 54px;
   }
   
-  
-  /*---------------------------------------------*/
   .wrap-input100 {
     position: relative;
     width: 100%;
@@ -184,10 +172,24 @@
     background: #e6e6e6;
     height: 50px;
     border-radius: 25px;
-    padding: 0 30px 0 68px;
+    padding: 0 30px 0 30px;
   }
   
-  .container-signUp-form-btn {
+  @-webkit-keyframes anim-shadow {
+    to {
+      box-shadow: 0px 0px 70px 25px;
+      opacity: 0;
+    }
+  }
+  
+  @keyframes anim-shadow {
+    to {
+      box-shadow: 0px 0px 70px 25px;
+      opacity: 0;
+    }
+  }
+
+  .container-forgot-form-btn {
     width: 100%;
     display: -webkit-box;
     display: -webkit-flex;
@@ -199,14 +201,14 @@
     padding-top: 20px;
   }
   
-  .signUp-form-btn {
+  .forgot-form-btn {
     font-family: Montserrat-Bold;
     font-size: 15px;
     line-height: 1.5;
     color: #fff;
     text-transform: uppercase;
-  
-    width: 100%;
+    margin-bottom: 80px;
+    width: 50%;
     height: 50px;
     border-radius: 25px;
     background: #285d80;
@@ -225,104 +227,44 @@
     transition: all 0.4s;
   }
   
-  .signUp-form-btn:hover {
-    background:#4e6fa1;
+  .forgot-form-btn:hover {
+    background: #3b5b8b;
   }
   
   @media (max-width: 992px) {
-    .wrap-signUp {
+    .wrap-forgot {
       padding: 177px 90px 33px 85px;
     }
   
-    .signUp-pic {
+    .forgot-pic {
       width: 35%;
     }
   
-    .signUp-form {
+    .forgot-form {
       width: 50%;
     }
   }
   
   @media (max-width: 768px) {
-    .wrap-signUp {
+    .wrap-forgot {
       padding: 100px 80px 33px 80px;
     }
   
-    .signUp-pic {
+    .forgot-pic {
       display: none;
     }
   
-    .signUp-form {
+    .forgot-form {
       width: 100%;
     }
   }
   
   @media (max-width: 576px) {
-    .wrap-signUp {
+    .wrap-forgot {
       padding: 100px 15px 33px 15px;
     }
   }
   
   .validate-input {
     position: relative;
-  }
-  
-  .alert-validate::before {
-    content: attr(data-validate);
-    position: absolute;
-    max-width: 70%;
-    background-color: white;
-    border: 1px solid #c80000;
-    border-radius: 13px;
-    padding: 4px 25px 4px 10px;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-    right: 8px;
-    pointer-events: none;
-  
-    font-family: Poppins-Medium;
-    color: #c80000;
-    font-size: 13px;
-    line-height: 1.4;
-    text-align: left;
-  
-    visibility: hidden;
-    opacity: 0;
-  
-    -webkit-transition: opacity 0.4s;
-    -o-transition: opacity 0.4s;
-    -moz-transition: opacity 0.4s;
-    transition: opacity 0.4s;
-  }
-  
-  .alert-validate::after {
-    content: "\f06a";
-    font-family: FontAwesome;
-    display: block;
-    position: absolute;
-    color: #c80000;
-    font-size: 15px;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-    right: 13px;
-  }
-  
-  .alert-validate:hover:before {
-    visibility: visible;
-    opacity: 1;
-  }
-  
-  @media (max-width: 992px) {
-    .alert-validate::before {
-      visibility: visible;
-      opacity: 1;
-    }
   }

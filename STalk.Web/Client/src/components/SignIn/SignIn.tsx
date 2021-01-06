@@ -8,9 +8,9 @@ function SignIn() {
 
     return (
         <div className="limiter">
-		<div className="container-login100">
-			<div className="wrap-login100">
-				<div className="login100-pic js-tilt" data-tilt>
+		<div className="container-signIn">
+			<div className="wrap-signIn">
+				<div className="signIn-pic js-tilt" data-tilt>
 					<img src="/img-01.png" alt="IMG"/>
 				</div>
 				<Formik
@@ -32,7 +32,7 @@ function SignIn() {
                 >
                 {({ errors, touched,isSubmitting,status}) => (
                     <Form>
-                        <span className="login100-form-title">
+                        <span className="signIn-form-title">
                             Sign in
                         </span>
                         <h6>Username</h6>
@@ -45,8 +45,8 @@ function SignIn() {
                             <Field className="input100" type="password" name="password" placeholder="Password"/>
                             {errors.password && touched.password ? <div className="validation">{errors.password}</div> : null}
                         </div>
-                        <div className="container-login100-form-btn">
-                            <button className="login100-form-btn">
+                        <div className="container-signIn-form-btn">
+                            <button className="signIn-form-btn">
                                 Sign in
                             </button>
                         </div>
@@ -54,7 +54,7 @@ function SignIn() {
                             <span className="txt1">
                                 Forgot
                             </span>
-                            <a className="txt2" href="#">
+                            <a className="txt2" href="/forgot">
                                 Username / Password?
                             </a>
                         </div>

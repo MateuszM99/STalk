@@ -20,7 +20,7 @@ function ChatsList() {
             </div>
             <div className="search-box">
                 <div className="input-wrapper">                   
-                    <SearchIcon/>
+                    <SearchIcon style={{marginLeft:'10px'}}/>
                     <input placeholder="Search here" type="text"/>
                 </div>
             </div>

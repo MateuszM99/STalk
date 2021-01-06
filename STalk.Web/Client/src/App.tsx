@@ -7,7 +7,8 @@ import FetchData from './components/FetchData';
 import MainWindow from './components/MainWindow/MainWindow';
 import SignIn from './components/SignIn/SignIn';
 import SignUp from './components/SignUp/SignUp';
-
+import PasswordForgetWindow from './components/PasswordForgetWindow/PasswordForgetWindow'
+import PasswordResetWindow from './components/PasswordResetWindow/PasswordResetWindow'
 import './custom.css'
 
 export default () => (
@@ -17,6 +18,12 @@ export default () => (
         </Route>
         <Route exact path="/signIn" >
             <SignIn/>
+        </Route>
+        <Route exact path="/forgot">
+            <PasswordForgetWindow/>
+        </Route>
+        <Route exact path="/reset/:userId/:token">
+            <PasswordResetWindow/>
         </Route>
         <Route path='/sTalk'>
             <MainWindow/>
