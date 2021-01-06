@@ -1,4 +1,5 @@
 ﻿using Application.Enums;
+using Application.Responses;
 using Application.ViewModels;
 using Domain.Models;
 using EntityFramework.DbContexts;
@@ -24,8 +25,9 @@ namespace STalk.Api.Controllers
         private readonly IAuthenticationServices authServices;
         private readonly IConfiguration _configuration;
         private readonly IEmailSender emailSender;
+        private readonly IAccountServices accountServices;
 
-        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, MainDbContext appDb, IAuthenticationServices authServices, IConfiguration configuration, IEmailSender emailSender)
+        public AuthenticationController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, MainDbContext appDb, IAuthenticationServices authServices, IConfiguration configuration, IEmailSender emailSender, IAccountServices accountServices)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -33,6 +35,7 @@ namespace STalk.Api.Controllers
             this.authServices = authServices;
             _configuration = configuration;
             this.emailSender = emailSender;
+            this.accountServices = accountServices;
         }
 
 
@@ -103,5 +106,38 @@ namespace STalk.Api.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        [Route("sendPasswordReset")]
+        public async Task<IActionResult> SendPasswordResetLink([FromBody]string email)
+        {
+            AccountResponse response = await accountServices.RetrievePassword(email);
+
+            if(response.ResponseStatus == Status.Success)
+            {
+                return Ok(response.Message);
+            } 
+            else
+            {
+                return StatusCode(StatusCodes.Status404NotFound,response.Message);
+            }            
+        }
+
+        [HttpPost]
+        [Route("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel resetPasswordViewModel)
+        {
+            AccountResponse response = await accountServices.ResetPassword(resetPasswordViewModel);
+            
+            if (response.ResponseStatus == Status.Success)
+            {
+                return Ok(response.Message);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status404NotFound, response.Message);
+            }
+        }
+
     }
 }

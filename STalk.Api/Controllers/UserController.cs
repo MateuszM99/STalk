@@ -32,7 +32,7 @@ namespace STalk.Api.Controllers
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
             if(user != null && !String.IsNullOrWhiteSpace(username))
-            {
+            {                
                 if(await contactsServices.SendAddToContactsRequest(user, username))
                 {
                     return Ok();
