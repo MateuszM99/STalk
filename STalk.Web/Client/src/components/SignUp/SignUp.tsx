@@ -62,7 +62,7 @@ function SignUp() {
                             </button>
                         </div>
                         <div className="text-center p-t-136">
-                            <a className="txt2" href="#">
+                            <a className="txt2" href="/signIn">
                                 Go to login page                               
                             </a>
                         </div>

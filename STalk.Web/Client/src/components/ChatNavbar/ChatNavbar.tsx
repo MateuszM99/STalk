@@ -3,6 +3,7 @@ import './style.scss'
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { Link } from 'react-router-dom';
 
 function ChatNavbar() {
@@ -34,6 +35,10 @@ function ChatNavbar() {
                     <p>Profile</p>
                 </div>
                 </Link>
+                <div className="offset">
+                    <PowerSettingsNewIcon/>
+                    <p>Sign out</p>
+                </div>
             </div>
         </div>
     )
