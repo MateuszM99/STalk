@@ -16,7 +16,9 @@ function PasswordForgetWindow() {
                 }}
                 
                 validationSchema = {Yup.object({
-                    email : Yup.string(),
+                    email : Yup.string()
+                    .required('You must enter an email')
+                    .email('email is not valid'),
                 })}
 
                 onSubmit = {async (values,{setSubmitting, setStatus,resetForm}) => {

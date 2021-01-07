@@ -4,6 +4,8 @@ import './util.scss';
 import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import {signUpRequest} from '../../services/api/AuthRequests'
 import { useHistory } from "react-router";
+import * as Yup from 'yup'
+
 
 function SignUp() {
     const history = useHistory();
@@ -22,6 +24,21 @@ function SignUp() {
                     confirmPassword : ''
                 }}
                 
+                validationSchema = {Yup.object({
+                    email : Yup.string()
+                    .required('Email is required')
+                    .email('Email is not valid'),
+                    username : Yup.string()
+                        .required('Username is required'),
+                    password : Yup.string()
+                        .required('Password is required')
+                        .matches(
+                            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+                            "Must contain 8 characters, one uppercase, one lowercase, one number and one special case character"
+                          ),
+                    confirmPassword: Yup.string().required('Password confirm is required')
+                    .oneOf([Yup.ref("password"), null], "Passwords must match")
+                })}
 
                 onSubmit = {async (values,{setSubmitting, setStatus,resetForm}) => {
                     console.log(values)

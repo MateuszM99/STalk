@@ -11,7 +11,7 @@ import PasswordForgetWindow from './components/PasswordForgetWindow/PasswordForg
 import PasswordResetWindow from './components/PasswordResetWindow/PasswordResetWindow'
 import './custom.css'
 
-export default () => (
+export default() => (
     <div style={{height:"100vh"}}>
         <Route exact path="/signUp" >
             <SignUp/>
@@ -22,7 +22,7 @@ export default () => (
         <Route exact path="/forgot">
             <PasswordForgetWindow/>
         </Route>
-        <Route exact path="/reset/:userId/:token">
+        <Route exact path="/reset">
             <PasswordResetWindow/>
         </Route>
         <Route path='/sTalk'>
