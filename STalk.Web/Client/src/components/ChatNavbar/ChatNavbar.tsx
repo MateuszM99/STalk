@@ -4,9 +4,16 @@ import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import Badge from '@material-ui/core/Badge';
 import { Link } from 'react-router-dom';
 
 function ChatNavbar() {
+
+    const signOut = () => {
+        localStorage.setItem("userData",'')
+        localStorage.clear();
+    } 
+
     return (
         <div className="col-md-2 border-right" style={{background: '#285d80'}}>
             <div className="nav__image__display">               
@@ -25,7 +32,9 @@ function ChatNavbar() {
                 </Link>
                 <Link to={`/sTalk/friends`}>
                 <div>
-                    <PeopleIcon style={{color : 'white'}}/>
+                    <Badge badgeContent={4} color="error">
+                        <PeopleIcon style={{color : 'white'}}/>
+                    </Badge>
                     <p>Friends</p>
                 </div>
                 </Link>
@@ -35,7 +44,7 @@ function ChatNavbar() {
                     <p>Profile</p>
                 </div>
                 </Link>
-                <div className="offset">
+                <div className="offset" onClick={signOut}>
                     <PowerSettingsNewIcon/>
                     <p>Sign out</p>
                 </div>

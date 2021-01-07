@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route } from 'react-router';
+import { Route,Redirect } from 'react-router';
 import Layout from './components/Layout';
 import Home from './components/Home';
 import Counter from './components/Counter';
@@ -29,6 +29,7 @@ export default() => (
             <MainWindow/>
         </Route>
         <Route path="/">
+            <Redirect to="/sTalk/chat" />
         </Route>
     </div>
 );

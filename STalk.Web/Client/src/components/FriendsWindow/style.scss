@@ -33,7 +33,7 @@
 
 .friends__add__friend{
     display: flex;
-    align-items: center;
+    flex-direction: column;
     padding: 20px 40px;
     p{
         font-weight: 600;
@@ -44,6 +44,12 @@
     button{
         margin-left: auto;
         justify-self: flex-end;
+    }
+
+    div{
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
     }
 }
 
