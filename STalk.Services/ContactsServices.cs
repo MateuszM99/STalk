@@ -8,6 +8,8 @@ using System.Text;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Application.Responses;
+using Application.Enums;
 
 namespace Services
 {
@@ -20,7 +22,7 @@ namespace Services
             this.appDb = appDb;
             this.userManager = userManager;
         }
-        public async Task<bool> AcceptAddToContactsRequest(User userAcceptingRequest,long addToContactsRequestId)
+        public async Task<ContactsResponse> AcceptAddToContactsRequest(User userAcceptingRequest,long addToContactsRequestId)
         {
             var addRequest = await appDb.AddToContactRequests.Where(u => u.UserTo.Id == userAcceptingRequest.Id && u.Id == addToContactsRequestId).FirstOrDefaultAsync();
 
@@ -29,22 +31,37 @@ namespace Services
                 var userSendingRequest = await userManager.FindByIdAsync(addRequest.UserFromId);
                 if(userSendingRequest == null)
                 {
-                    return false;
+                    return new ContactsResponse { Message = "User sending that request does not exist anymore", ResponseStatus = Status.Error };
                 }
 
                 // Add users on bothends to each others contactslist, if they do not have contacts list create a contacts list then add them
                 if (await AddUserToContactList(userAcceptingRequest, userSendingRequest.Id) && await AddUserToContactList(userSendingRequest, userAcceptingRequest.Id))
                 {
                     appDb.AddToContactRequests.Remove(addRequest);
-                    return true;
+                    return new ContactsResponse { Message = "User added to contacts list", ResponseStatus = Status.Success };
                 }
             }
 
 
-            return false;
+            return new ContactsResponse { Message = "Did not find any add request with that id", ResponseStatus = Status.Error };
         }
 
-        public async Task<bool> SendAddToContactsRequest(User userFrom,string usernameTo)
+        public async Task<ContactsResponse> FindUsersAsync(string searchString)
+        {
+            if(searchString != null)
+            {
+                var users = await appDb.Users.Where(u => u.Email.Contains(searchString) || u.UserName.Contains(searchString)).ToListAsync();
+                if(users != null)
+                {
+                    string message = String.Format("Found {0} users", users.Count);
+                    return new ContactsResponse { Users = users, Message = message, ResponseStatus = Status.Success };
+                }
+                return new ContactsResponse { Users = users, Message = "Did not found any user with given username or email", ResponseStatus = Status.Success };
+            }
+            return new ContactsResponse { Users = null, Message = "The request was incorrect", ResponseStatus = Status.Error };
+        }
+
+        public async Task<ContactsResponse> SendAddToContactsRequest(User userFrom,string usernameTo)
         {
             var userTo = await userManager.FindByNameAsync(usernameTo);
 
@@ -64,7 +81,7 @@ namespace Services
                 {
                     if(userContactsList.Contacts.Find(u => u.User.UserName == usernameTo) != null)
                     {
-                        return false;
+                        return new ContactsResponse { Message = "This user is already in your contacts list",ResponseStatus = Status.Error};
                     }
                 }
 
@@ -72,12 +89,12 @@ namespace Services
                 {
                     await appDb.AddToContactRequests.AddAsync(addToContactRequest);
                     await appDb.SaveChangesAsync();
-                    return true;
+                    return new ContactsResponse { Message = "Friends request sent succesfully", ResponseStatus = Status.Success };
                 }
 
-                return false;
+                return new ContactsResponse { Message = "You already sent request to that user", ResponseStatus = Status.Error };
             }
-            return false;
+            return new ContactsResponse { Message = "User you are trying to add does not exist", ResponseStatus = Status.Error }; ;
         }
 
         private async Task<bool> AddUserToContactList(User userToAdd,string contactsListUserId)

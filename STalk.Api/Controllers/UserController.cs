@@ -111,18 +111,33 @@ namespace STalk.Api.Controllers
             return StatusCode(StatusCodes.Status400BadRequest);
         }
 
+        [HttpGet]
+        [Route("getUsers")]
+        public async Task<IActionResult> GetUsersRequest(string searchString)
+        {
+            ContactsResponse response = await contactsServices.FindUsersAsync(searchString);
+            if(response.ResponseStatus == Status.Success)
+            {
+                return Ok(response);
+            }
+
+            return StatusCode(StatusCodes.Status400BadRequest, response);
+        }
+
+
         [HttpPost]
         [Route("addToContacts")]
         public async Task<IActionResult> SendAddToContactsRequest([FromBody] string username)
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
             if(user != null && !String.IsNullOrWhiteSpace(username))
-            {                
-                if(await contactsServices.SendAddToContactsRequest(user, username))
+            {
+                ContactsResponse response = await contactsServices.SendAddToContactsRequest(user, username);
+                if (response.ResponseStatus == Status.Success)
                 {
-                    return Ok();
+                    return Ok(response);
                 }
-                return StatusCode(StatusCodes.Status400BadRequest);
+                return StatusCode(StatusCodes.Status400BadRequest,response);
             }
             return StatusCode(StatusCodes.Status400BadRequest);
         }
@@ -134,11 +149,12 @@ namespace STalk.Api.Controllers
             var user = await userManager.GetUserAsync(HttpContext.User);
             if(user != null)
             {
-                if(await contactsServices.AcceptAddToContactsRequest(user, addToContactsRequestId))
+                ContactsResponse response = await contactsServices.AcceptAddToContactsRequest(user, addToContactsRequestId);
+                if (response.ResponseStatus == Status.Success)
                 {
-                    return Ok();
+                    return Ok(response);
                 }
-                return StatusCode(StatusCodes.Status400BadRequest);
+                return StatusCode(StatusCodes.Status400BadRequest,response);
             }
             return StatusCode(StatusCodes.Status400BadRequest);
         }

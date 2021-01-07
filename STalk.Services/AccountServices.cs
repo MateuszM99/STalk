@@ -118,7 +118,7 @@ namespace Services
             if(user != null)
             {
                 string passwordResetToken = await userManager.GeneratePasswordResetTokenAsync(user);
-                string callBackUrl = String.Format("localhost:3000/reset/{0}/{1}",user.Id,passwordResetToken);
+                string callBackUrl = String.Format("localhost:3000/reset?id={0}&token={1}",user.Id,passwordResetToken);
 
                 string message = "If you want to reset your password click on the link" + callBackUrl;
 
