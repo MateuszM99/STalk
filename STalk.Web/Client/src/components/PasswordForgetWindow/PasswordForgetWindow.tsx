@@ -2,6 +2,7 @@ import React from 'react';
 import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import * as Yup from 'yup'
 import './style.scss'
+import {passwordRetrieveRequest} from '../../services/api/AuthRequests'
 
 function PasswordForgetWindow() {
 
@@ -11,19 +12,28 @@ function PasswordForgetWindow() {
 			<div className="wrap-forgot">
 				<Formik
                 initialValues={{
-                    username : '',
-                    password : '',
+                    email : ''
                 }}
                 
                 validationSchema = {Yup.object({
-                    username : Yup.string()
-                        .required('Username is required'),
-                    password : Yup.string()
-                        .required('Password is required'),
+                    email : Yup.string(),
                 })}
 
-                onSubmit = {() => {
-                    
+                onSubmit = {async (values,{setSubmitting, setStatus,resetForm}) => {
+                    if(values.email){
+                        try{
+                            let response = await passwordRetrieveRequest(values);
+                            setSubmitting(false);
+                            resetForm();
+                        } catch(err){
+                            console.log(err.message);
+                            setSubmitting(false);
+                            resetForm();
+                            setStatus({
+                                errorMessage : err.message
+                            });
+                        }                                                                                                                                                                                        
+                    }  
                 }}
                 >
                 {({ errors, touched,isSubmitting,status}) => (
@@ -34,12 +44,15 @@ function PasswordForgetWindow() {
                         <h6>Email</h6>
                         <div className="wrap-input100">
                             <Field className="input100" type="text" name="email" placeholder="Enter your email"/>
-                            {errors.password && touched.password ? <div className="validation">{errors.password}</div> : null}
+                            {errors.email && touched.email ? <div className="validation">{errors.email}</div> : null}
                         </div>
                         <div className="container-forgot-form-btn">
-                            <button className="forgot-form-btn">
-                                Send
+                            <button className="forgot-form-btn" type="submit">
+                                {isSubmitting ? 'Sending ...' : 'Send'}
                             </button>
+                            {status && status.errorMessage ? (
+                                <div className="validation">{status.errorMessage}</div>
+                            ) : null}
                         </div>
                         <div className="text-center">
                             <a className="txt2" href="/signIn">

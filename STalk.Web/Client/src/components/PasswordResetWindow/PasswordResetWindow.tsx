@@ -2,28 +2,41 @@ import React from 'react';
 import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import * as Yup from 'yup'
 import './style.scss'
+import {passwordChangeRequest} from '../../services/api/AuthRequests'
+import { useHistory } from "react-router";
 
 function PasswordResetWindow() {
-
+    const history = useHistory();
     return (
         <div className="limiter">
 		<div className="container-reset">
 			<div className="wrap-reset">
 				<Formik
                 initialValues={{
-                    username : '',
                     password : '',
+                    confirmPassword : ''
                 }}
                 
                 validationSchema = {Yup.object({
-                    username : Yup.string()
-                        .required('Username is required'),
-                    password : Yup.string()
-                        .required('Password is required'),
+                    password : Yup.string(),
+                    confirmPassword : Yup.string(),
                 })}
 
-                onSubmit = {() => {
-                    
+                onSubmit = {async (values,{setSubmitting, setStatus,resetForm}) => {
+                    if(values.password && values.confirmPassword){
+                        try{                           
+                            let response = await passwordChangeRequest(values);
+                            setSubmitting(false);
+                            resetForm();
+                        } catch(err){
+                            console.log(err.message);
+                            setSubmitting(false);
+                            resetForm();
+                            setStatus({
+                                errorMessage : err.message
+                            });
+                        }                                                                                                                                                                                        
+                    }  
                 }}
                 >
                 {({ errors, touched,isSubmitting,status}) => (
