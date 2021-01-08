@@ -1,10 +1,15 @@
 import React from 'react'
 
-function AddFriend() {
+interface Props{
+    username: string;
+    image: File
+}
+
+export const AddFriend: React.FC<Props> = ({username,image}) => {
     return (
         <div>
-            <img className="profile-image" src="https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg" alt=""/>
-            <p>SomeUser</p>
+            <img className="profile-image"  alt=""/>
+            <p>{username}</p>
             <button className="friends__action__button">Add</button>
         </div>
     )

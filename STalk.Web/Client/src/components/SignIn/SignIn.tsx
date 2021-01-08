@@ -5,8 +5,17 @@ import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import {signInRequest} from '../../services/api/AuthRequests'
 import * as Yup from 'yup'
 import { useHistory } from "react-router";
+import axios from 'axios'
 
 function SignIn() {
+    const setAxiosInterceptors = (userData) => {
+        axios.interceptors.request.use(function (config) {
+            const token = userData.token;
+            config.headers.Authorization =  token;
+        
+            return config;
+        });
+    }
     const history = useHistory();
     return (
         <div className="limiter">
@@ -33,6 +42,7 @@ function SignIn() {
                             try{
                                 let response = await signInRequest(values);
                                 localStorage.setItem('userData',JSON.stringify(response.data));
+                                setAxiosInterceptors(response.data);
                                 setSubmitting(false);
                                 resetForm();
                                 history.push({

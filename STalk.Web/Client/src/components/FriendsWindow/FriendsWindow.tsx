@@ -1,13 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import './style.scss'
-import {getUsersRequest} from '../../services/api/ContactsRequests'
+import {getUsersRequest,getUsersContactsRequest,getUsersFriendsRequestsRequest} from '../../services/api/ContactsRequests'
 import AddFriend from './AddFriend'
+import FriendRequest from './FriendRequest'
+import Friend from './Friend'
 
 function FriendsWindow() {
 
     const [foundUsers,setFoundUsers] = useState(null);
     const [userFindMessage,setUserFindMessage] = useState("");
     const [userSearchString,setUserSearchString] = useState(null);
+    const [friends,setFriends] = useState(null);
+    const [friendsRequests,setFriendsRequests] = useState(null);
 
     const getUserSearchString = (e) => {
         setUserSearchString(e.target.value);
@@ -25,6 +29,28 @@ function FriendsWindow() {
         }
     }
 
+    useEffect(() => {
+        async function getData(){
+            try{
+                let response = await getUsersContactsRequest();
+                setFriends(response.data.users); 
+                //setUserFindMessage(response.data.message);
+            } catch(err) {
+                //setUserFindMessage("Invalid input")
+            }
+
+            try{
+                let response = await getUsersFriendsRequestsRequest();
+                setFriendsRequests(response.data.users); 
+                //setUserFindMessage(response.data.message);
+            } catch(err) {
+               // setUserFindMessage("Invalid input")
+            }
+        }
+        getData();
+
+      },[friends,friendsRequests]);
+
     return (
         <div className="col-md-10">
             <div>
@@ -38,29 +64,20 @@ function FriendsWindow() {
                 <div className="friends__add__friend border-bottom" style={foundUsers != null ? {display:'flex'} : {display: 'none'}}>
                     <p>{userFindMessage}</p>
                     {foundUsers?.map((user => 
-                        <AddFriend/>
+                        <AddFriend username={user.username} image={user.profileImage}/>
                         ))}
                 </div>
                 <div className="friends__friend__requests border-bottom">
                     <h6>Friend Requests</h6>
-                    <div className="friends__friend__requests__user">
-                        <img className="profile-image" src="https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg" alt=""/>
-                        <p>SomeUser</p>
-                        <span>
-                            <button className="friends__action__button">Accept</button>
-                            <button className="friends__action__button">Decline</button>
-                        </span>
-                    </div>
+                        {friendsRequests?.map((user =>
+                            <FriendRequest username={user.username} image={user.profileImage}/>
+                            ))}
                 </div>
                 <div className="friends__friends__list border-bottom">
                 <h6>Friends</h6>
-                <div className="friends__friend__requests__user">
-                        <img className="profile-image" src="https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg" alt=""/>
-                        <p>SomeUser</p>
-                        <span>
-                            <button className="friends__action__button">Delete</button>
-                        </span>
-                </div>
+                    {friends?.map((user => 
+                        <Friend username={user.username} image={user.image}/>
+                        ))}
                 </div>
             </div>
         </div>

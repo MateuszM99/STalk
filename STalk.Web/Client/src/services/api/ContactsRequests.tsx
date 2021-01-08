@@ -2,6 +2,14 @@ import axios from 'axios'
 
 const baseUrl = 'https://localhost:44333/api';
 
-export function getUsersRequest(signInData){
-    return axios.post(`${baseUrl}/user/getUsers`,signInData);
+export function getUsersRequest(searchString){
+    return axios.get(`${baseUrl}/user/getUsers?searchString=${searchString}`);
+}
+
+export function getUsersContactsRequest(){
+    return axios.get(`${baseUrl}/user/getUsersContacts`);
+}
+
+export function getUsersFriendsRequestsRequest(){
+    return axios.get(`${baseUrl}/user/getUsersFriendsRequests`);
 }
