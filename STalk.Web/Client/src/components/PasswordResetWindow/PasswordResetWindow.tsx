@@ -3,11 +3,18 @@ import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import * as Yup from 'yup'
 import './style.scss'
 import {passwordChangeRequest} from '../../services/api/AuthRequests'
-import { useHistory,useParams } from "react-router-dom";
+import { useHistory,Redirect } from "react-router-dom";
 
 function PasswordResetWindow() {
     const history = useHistory();
     const queryParams = new URLSearchParams(history.location.search)
+
+    if(localStorage.getItem('userData') != null){
+        return (
+            <Redirect to="/sTalk/chat"/>
+        )
+    }
+
     return (
         <div className="limiter">
 		<div className="container-reset">

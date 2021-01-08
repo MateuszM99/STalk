@@ -3,8 +3,15 @@ import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import * as Yup from 'yup'
 import './style.scss'
 import {passwordRetrieveRequest} from '../../services/api/AuthRequests'
+import { Redirect } from "react-router";
 
 function PasswordForgetWindow() {
+
+    if(localStorage.getItem('userData') != null){
+        return (
+            <Redirect to="/sTalk/chat"/>
+        )
+    }
 
     return (
         <div className="limiter">

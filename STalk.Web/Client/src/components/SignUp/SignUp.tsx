@@ -3,12 +3,19 @@ import './style.scss';
 import './util.scss';
 import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import {signUpRequest} from '../../services/api/AuthRequests'
-import { useHistory } from "react-router";
+import { useHistory,Redirect } from "react-router";
 import * as Yup from 'yup'
 
 
 function SignUp() {
     const history = useHistory();
+
+    if(localStorage.getItem('userData') != null){
+        return (
+            <Redirect to="/sTalk/chat"/>
+        )
+    }
+
     return (
         <div className="limiter">
 		<div className="container-signUp">
@@ -47,9 +54,7 @@ function SignUp() {
                             let response = await signUpRequest(values);
                             setSubmitting(false);
                             resetForm();
-                            history.push({
-                                pathname : "/signIn"
-                            })
+                            history.push("/signIn");
                         } catch(err){
                             console.log(err.message);
                             setSubmitting(false);

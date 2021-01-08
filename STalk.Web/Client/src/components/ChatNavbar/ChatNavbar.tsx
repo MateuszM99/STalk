@@ -5,13 +5,16 @@ import PersonIcon from '@material-ui/icons/Person';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import Badge from '@material-ui/core/Badge';
-import { Link } from 'react-router-dom';
+import { Link,useHistory } from 'react-router-dom';
 
 function ChatNavbar() {
+
+    const history = useHistory();
 
     const signOut = () => {
         localStorage.setItem("userData",'')
         localStorage.clear();
+        history.push("/signIn");
     } 
 
     return (

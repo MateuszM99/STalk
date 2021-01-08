@@ -4,7 +4,7 @@ import './util.scss';
 import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import {signInRequest} from '../../services/api/AuthRequests'
 import * as Yup from 'yup'
-import { useHistory } from "react-router";
+import { useHistory,Redirect } from "react-router";
 import axios from 'axios'
 
 function SignIn() {
@@ -16,7 +16,15 @@ function SignIn() {
             return config;
         });
     }
+
     const history = useHistory();
+
+    if(localStorage.getItem('userData') != null){
+        return (
+            <Redirect to="/sTalk/chat"/>
+        )
+    }
+
     return (
         <div className="limiter">
 		<div className="container-signIn">
@@ -37,7 +45,7 @@ function SignIn() {
                         .required('Password is required'),
                 })}
 
-                onSubmit = {async (values,{setSubmitting, setStatus,resetForm}) =>  {               
+                onSubmit = {async (values,{setSubmitting, setStatus,resetForm}) =>  {                                       
                         if(values.username && values.password){
                             try{
                                 let response = await signInRequest(values);
@@ -45,9 +53,7 @@ function SignIn() {
                                 setAxiosInterceptors(response.data);
                                 setSubmitting(false);
                                 resetForm();
-                                history.push({
-                                    pathname : "/sTalk/chat"
-                                })
+                                history.push("/sTalk/chat");
                             } catch(err){
                                 setSubmitting(false);
                                 resetForm();

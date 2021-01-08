@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseUrl = 'https://localhost:44333/api';
+const baseUrl = 'https://localhost:44338/api';
 
 export function getUsersRequest(searchString){
     return axios.get(`${baseUrl}/user/getUsers?searchString=${searchString}`);
