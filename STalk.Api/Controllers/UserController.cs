@@ -4,6 +4,7 @@ using Application.ViewModels;
 using Domain.Models;
 using EntityFramework.DbContexts;
 using IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -110,7 +111,7 @@ namespace STalk.Api.Controllers
             }
             return StatusCode(StatusCodes.Status400BadRequest);
         }
-
+       
         [HttpGet]
         [Route("getUsers")]
         public async Task<IActionResult> GetUsersRequest(string searchString)
@@ -124,6 +125,7 @@ namespace STalk.Api.Controllers
             return StatusCode(StatusCodes.Status400BadRequest, response);
         }
 
+        
         [HttpGet]
         [Route("getUsersContacts")]
         public async Task<IActionResult> GetUsersContacts()

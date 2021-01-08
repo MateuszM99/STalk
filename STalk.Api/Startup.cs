@@ -1,3 +1,5 @@
+using Application.Mappings;
+using AutoMapper;
 using Domain.Models;
 using EntityFramework.DbContexts;
 using IServices;
@@ -51,6 +53,14 @@ namespace STalk
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IContactsServices, ContactsServices>();
             services.AddScoped<IAccountServices, AccountServices>();
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new UserProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddAuthentication(options =>
             {

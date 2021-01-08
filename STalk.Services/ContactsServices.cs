@@ -65,7 +65,7 @@ namespace Services
         {
             if(user != null)
             {
-                var userContactsList = await appDb.ContactLists.FindAsync(user.Id);
+                var userContactsList = await appDb.ContactLists.Include(c => c.Contacts).FirstOrDefaultAsync(c => c.UserId == user.Id);
 
                 if(userContactsList == null)
                 {

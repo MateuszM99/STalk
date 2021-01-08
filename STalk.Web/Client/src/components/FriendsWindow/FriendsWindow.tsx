@@ -30,11 +30,13 @@ function FriendsWindow() {
     }
 
     useEffect(() => {
+        console.log(JSON.parse(localStorage.getItem('userData')).token);
         async function getData(){
             try{
                 let response = await getUsersContactsRequest();
                 setFriends(response.data.users); 
                 //setUserFindMessage(response.data.message);
+                console.log(response);
             } catch(err) {
                 //setUserFindMessage("Invalid input")
             }

@@ -8,16 +8,19 @@ import { useHistory,Redirect } from "react-router";
 import axios from 'axios'
 
 function SignIn() {
-    const setAxiosInterceptors = (userData) => {
+    /*const setAxiosInterceptors = (userData) => {
         axios.interceptors.request.use(function (config) {
             const token = userData.token;
             config.headers.Authorization =  token;
         
             return config;
         });
+    }*/
+    const setAxiosToken = (token) => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}` 
     }
 
-    const history = useHistory();
+    const history = useHistory();   
 
     if(localStorage.getItem('userData') != null){
         return (
@@ -50,7 +53,8 @@ function SignIn() {
                             try{
                                 let response = await signInRequest(values);
                                 localStorage.setItem('userData',JSON.stringify(response.data));
-                                setAxiosInterceptors(response.data);
+                                setAxiosToken(response.data.token);
+                                //setAxiosInterceptors(response.data);
                                 setSubmitting(false);
                                 resetForm();
                                 history.push("/sTalk/chat");

@@ -1,5 +1,10 @@
 import axios from 'axios'
 
+const token = JSON.parse(localStorage.getItem('userData')).token
+
+const header = `Authorization: Bearer ${token}`;
+
+
 const baseUrl = 'https://localhost:44338/api';
 
 export function getUsersRequest(searchString){
@@ -7,9 +12,9 @@ export function getUsersRequest(searchString){
 }
 
 export function getUsersContactsRequest(){
-    return axios.get(`${baseUrl}/user/getUsersContacts`);
+    return axios.get(`${baseUrl}/user/getUsersContacts`,{ headers: {"Authorization" : `Bearer ${token}`} });
 }
 
 export function getUsersFriendsRequestsRequest(){
-    return axios.get(`${baseUrl}/user/getUsersFriendsRequests`);
+    return axios.get(`${baseUrl}/user/getUsersFriendRequests`);
 }
