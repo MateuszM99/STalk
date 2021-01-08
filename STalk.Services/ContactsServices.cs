@@ -61,6 +61,37 @@ namespace Services
             return new ContactsResponse { Users = null, Message = "The request was incorrect", ResponseStatus = Status.Error };
         }
 
+        public async Task<ContactsResponse> GetUsersContacts(User user)
+        {
+            if(user != null)
+            {
+                var userContactsList = await appDb.ContactLists.FindAsync(user.Id);
+
+                if(userContactsList == null)
+                {
+                    return new ContactsResponse { Users = null, Message = "This user has no contacts list", ResponseStatus = Status.Error };
+                }
+
+                var userContacts = userContactsList.Contacts.Select(c => c.User).ToList();
+                string message = String.Format("You have {0} friends", userContacts.Count);
+                return new ContactsResponse { Users = userContacts, Message = message, ResponseStatus = Status.Success };
+            }
+            return new ContactsResponse { Users = null, Message = "User was not found", ResponseStatus = Status.Error };
+        }
+
+        public async Task<ContactsResponse> GetUsersFriendsRequests(User user)
+        {
+            if(user != null)
+            {
+                var usersFriendsRequests = await appDb.AddToContactRequests.Where(r => r.UserToId == user.Id).ToListAsync();
+                
+                string message = String.Format("You have {0} friend requests", usersFriendsRequests.Count);
+                return new ContactsResponse { AddToContactRequests = usersFriendsRequests, Message = message, ResponseStatus = Status.Success };
+            }
+            
+            return new ContactsResponse { Users = null, Message = "User was not found", ResponseStatus = Status.Error };
+        }
+
         public async Task<ContactsResponse> SendAddToContactsRequest(User userFrom,string usernameTo)
         {
             var userTo = await userManager.FindByNameAsync(usernameTo);

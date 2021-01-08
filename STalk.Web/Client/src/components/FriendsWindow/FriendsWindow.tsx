@@ -32,14 +32,14 @@ function FriendsWindow() {
                     <h6>Add a friend</h6>
                     <div className="friends__search__friend__input__wrapper">
                     <input name="searchString" onChange={getUserSearchString}></input>
-                    <button className="friends__action__button">Search</button>
+                    <button className="friends__action__button" onClick={findUsers}>Search</button>
                     </div>
                 </div>
-                <div className="friends__add__friend border-bottom">
-                    <p>Some text</p>
-                    <AddFriend/>
-                    <AddFriend/>
-                    <AddFriend/>
+                <div className="friends__add__friend border-bottom" style={foundUsers != null ? {display:'flex'} : {display: 'none'}}>
+                    <p>{userFindMessage}</p>
+                    {foundUsers?.map((user => 
+                        <AddFriend/>
+                        ))}
                 </div>
                 <div className="friends__friend__requests border-bottom">
                     <h6>Friend Requests</h6>

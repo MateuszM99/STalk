@@ -9,6 +9,7 @@ namespace Application.Responses
     public class ContactsResponse
     {
         public List<User> Users { get; set; }
+        public List<AddToContactRequest> AddToContactRequests { get; set; }
         public string Message { get; set; }
         public Status ResponseStatus { get; set; }
     }
