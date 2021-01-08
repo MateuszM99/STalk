@@ -124,6 +124,31 @@ namespace STalk.Api.Controllers
             return StatusCode(StatusCodes.Status400BadRequest, response);
         }
 
+        [HttpGet]
+        [Route("getUsersContacts")]
+        public async Task<IActionResult> GetUsersContacts()
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            ContactsResponse response = await contactsServices.GetUsersContacts(user);
+            if (response.ResponseStatus == Status.Success)
+            {
+                return Ok(response);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, response);
+        }
+
+        [HttpGet]
+        [Route("getUsersFriendRequests")]
+        public async Task<IActionResult> GetUsersFriendsRequests()
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            ContactsResponse response = await contactsServices.GetUsersFriendsRequests(user);
+            if (response.ResponseStatus == Status.Success)
+            {
+                return Ok(response);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, response);
+        }
 
         [HttpPost]
         [Route("addToContacts")]
