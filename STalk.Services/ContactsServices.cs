@@ -77,18 +77,41 @@ namespace Services
             return new ContactsResponse { Message = "Did not find any add request with that id", ResponseStatus = Status.Error };
         }
 
-        public async Task<ContactsResponse> FindUsersAsync(string searchString)
+        public async Task<ContactsResponse> FindUsersAsync(User user,string searchString)
         {
             if(searchString != null)
             {
                 var users = await appDb.Users
                     .Include(u => u.Files)
-                    .Where(u => u.Email.Contains(searchString) || u.UserName.Contains(searchString))
+                    .Where(u => (u.Email.Contains(searchString) && u.Email != user.Email) || (u.UserName.Contains(searchString) && u.UserName != user.UserName))
                     .ToListAsync();
 
-                if(users != null)
+                var userContactsList = await appDb.ContactLists
+                    .Include(c => c.Contacts)
+                    .FirstOrDefaultAsync(u => u.UserId == user.Id);
+
+                var userAddToContactsRequest = await appDb.AddToContactRequests
+                    .Where(u => u.UserFromId == user.Id)
+                    .ToListAsync();
+
+                if (users != null)
                 {
                     var usersDTOS = mapper.Map<List<UserDTO>>(users);
+                    foreach (var foundUser in usersDTOS)
+                    {
+                        if(userContactsList.Contacts.Find(u => u.UserId == foundUser.Id) != null)
+                        {
+                            foundUser.UserStatus = UserStatus.Friend;
+                        }
+                        else if (userAddToContactsRequest.Find(r => r.UserToId == foundUser.Id) != null)
+                        {
+                            foundUser.UserStatus = UserStatus.Added;
+                        }
+                        else
+                        {
+                            foundUser.UserStatus = UserStatus.None;
+                        }                                                  
+                    }
                     string message = String.Format("Found {0} users", users.Count);
                     return new ContactsResponse { Users = usersDTOS, Message = message, ResponseStatus = Status.Success };
                 }
@@ -181,7 +204,11 @@ namespace Services
         {
             if (userToAdd != null && !String.IsNullOrWhiteSpace(contactsListUserId))
             {
-                var userContactsList = await appDb.ContactLists.Where(u => u.UserId == contactsListUserId).FirstOrDefaultAsync();
+                var userContactsList = await appDb.ContactLists
+                    .Where(u => u.UserId == contactsListUserId)
+                    .Include(c => c.Contacts)
+                    .FirstOrDefaultAsync();
+                
                 if (userContactsList == null)
                 {
                     userContactsList = new ContactList
@@ -191,6 +218,15 @@ namespace Services
 
                     await appDb.ContactLists.AddAsync(userContactsList);
                     await appDb.SaveChangesAsync();
+                }
+
+                if(userContactsList != null)
+                {
+                    var userContact = userContactsList.Contacts.Where(c => c.UserId == userToAdd.Id).FirstOrDefault();
+                    if(userContact != null)
+                    {
+                        return false;
+                    }
                 }
 
                 ContactListUser contactListUser = new ContactListUser

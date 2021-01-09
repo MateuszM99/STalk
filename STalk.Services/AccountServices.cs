@@ -83,11 +83,15 @@ namespace Services
 
                     // remove previous profile image
                     var previousProfileImage = await appDb.Files.Where(x => x.UserId == user.Id && x.Id == user.FileAvatarId).FirstOrDefaultAsync();
-                    appDb.Files.Remove(previousProfileImage);
-                    await appDb.SaveChangesAsync();
+                    if (previousProfileImage != null)
+                    {
+                        appDb.Files.Remove(previousProfileImage);
+                        await appDb.SaveChangesAsync();
+                    }
  
                     // add new profile image
                     await appDb.Files.AddAsync(profileImage);
+                    await appDb.SaveChangesAsync();
                     user.FileAvatarId = profileImage.Id;                   
                     await appDb.SaveChangesAsync();
                     return new AccountResponse { ResponseStatus = Status.Success, Message = "Succesfully changed profile image" };

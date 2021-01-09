@@ -1,7 +1,9 @@
-﻿using Application.Enums;
+﻿using Application.DTO;
+using Application.Enums;
 using Application.RequestsModels;
 using Application.Responses;
 using Application.ViewModels;
+using AutoMapper;
 using Domain.Models;
 using EntityFramework.DbContexts;
 using IServices;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -25,14 +28,34 @@ namespace STalk.Api.Controllers
         private readonly MainDbContext appDb;
         private readonly IContactsServices contactsServices;
         private readonly IAccountServices accountServices;
+        private readonly IMapper mapper;
 
-        public UserController(UserManager<User> userManager, MainDbContext appDb, IContactsServices contactsServices, IAccountServices accountServices)
+        public UserController(UserManager<User> userManager, MainDbContext appDb, IContactsServices contactsServices, IAccountServices accountServices,IMapper mapper)
         {
             this.userManager = userManager;
             this.appDb = appDb;
             this.contactsServices = contactsServices;
             this.accountServices = accountServices;
+            this.mapper = mapper;
         }
+
+        [HttpGet]
+        [Route("getUser")]
+        public async Task<IActionResult> GetUser()
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            var files = await appDb.Files.Where(f => f.UserId == user.Id).ToListAsync();
+            user.Files = files;
+
+            if(user != null) 
+            { 
+                var userDTO = mapper.Map<UserDTO>(user);         
+                return Ok(userDTO);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
+
 
         [HttpPost]
         [Route("emailChange")]
@@ -76,7 +99,7 @@ namespace STalk.Api.Controllers
 
         [HttpPost]
         [Route("usernameChange")]
-        public async Task<IActionResult> ChangeUsername(UsernameChangeViewModel usernameChangeViewModel)
+        public async Task<IActionResult> ChangeUsername([FromBody]UsernameChangeViewModel usernameChangeViewModel)
         {
             if (usernameChangeViewModel != null)
             {
@@ -96,7 +119,7 @@ namespace STalk.Api.Controllers
 
         [HttpPost]
         [Route("profileImageChange")]
-        public async Task<IActionResult> ChangeProfileImage(ProfileImageChangeViewModel profileImageChangeViewModel)
+        public async Task<IActionResult> ChangeProfileImage([FromForm]ProfileImageChangeViewModel profileImageChangeViewModel)
         {
             if(profileImageChangeViewModel != null)
             {
@@ -118,7 +141,8 @@ namespace STalk.Api.Controllers
         [Route("getUsers")]
         public async Task<IActionResult> GetUsersRequest(string searchString)
         {
-            ContactsResponse response = await contactsServices.FindUsersAsync(searchString);
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            ContactsResponse response = await contactsServices.FindUsersAsync(user,searchString);
             if(response.ResponseStatus == Status.Success)
             {
                 return Ok(response);
@@ -173,12 +197,12 @@ namespace STalk.Api.Controllers
 
         [HttpPost]
         [Route("acceptAddToContacts")]
-        public async Task<IActionResult> AcceptAddToContactsRequest([FromBody]long addToContactsRequestId)
+        public async Task<IActionResult> AcceptAddToContactsRequest([FromBody]LongRequest addToContactsRequestId)
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
             if(user != null)
             {
-                ContactsResponse response = await contactsServices.AcceptAddToContactsRequest(user, addToContactsRequestId);
+                ContactsResponse response = await contactsServices.AcceptAddToContactsRequest(user, addToContactsRequestId.Long);
                 if (response.ResponseStatus == Status.Success)
                 {
                     return Ok(response);
@@ -190,12 +214,12 @@ namespace STalk.Api.Controllers
 
         [HttpPost]
         [Route("declineAddToContacts")]
-        public async Task<IActionResult> DeclineAddToContactsRequest([FromBody]long addToContactsRequestId)
+        public async Task<IActionResult> DeclineAddToContactsRequest([FromBody]LongRequest addToContactsRequestId)
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
-                ContactsResponse response = await contactsServices.DeclineAddToContactsRequest(user, addToContactsRequestId);
+                ContactsResponse response = await contactsServices.DeclineAddToContactsRequest(user, addToContactsRequestId.Long);
                 if (response.ResponseStatus == Status.Success)
                 {
                     return Ok(response);
