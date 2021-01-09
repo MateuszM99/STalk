@@ -8,7 +8,7 @@ if(token != null){
     console.log();
     axios.interceptors.request.use(
         config => {
-        config.headers.authorization = `Bearer ${token} `;
+        config.headers.authorization = `Bearer ${token}`;
         return config;
         },
         error => {
@@ -33,10 +33,10 @@ export function addToContactsRequest(username){
     return axios.post(`${baseUrl}/user/addToContacts`,{String : username});
 }
 
-export function acceptAddToContactsRequest(addToContactsRequestId){
-    return axios.post(`${baseUrl}/user/acceptAddToContacts`,addToContactsRequestId);
+export function acceptAddToContactsRequest(addRequestId){
+    return axios.post(`${baseUrl}/user/acceptAddToContacts`,{Long : addRequestId});
 }
 
 export function declineAddToContactsRequest(addRequestId){
-    return axios.post(`${baseUrl}/user/declineAddToContacts`,{addToContactsRequestId : addRequestId});
+    return axios.post(`${baseUrl}/user/declineAddToContacts`,{Long : addRequestId});
 }

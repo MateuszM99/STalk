@@ -5,11 +5,12 @@ import EmailChangeForm from './EmailChangeForm'
 import './style.scss'
 import {Formik,Form, yupToFormErrors,Field} from 'formik'
 import * as Yup from 'yup'
-import {profileImageChangeRequest} from '../../services/api/ProfileRequests'
+import {profileImageChangeRequest,getProfileRequest} from '../../services/api/ProfileRequests'
 
 function ProfileWindow() {
     const [image,setImage] = useState<any>("https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg");
     const [renderState,setRenderState] = useState(1);
+    const [user,setUser] = useState(null);
 
 
     const onSelectFile = (event: ChangeEvent<HTMLInputElement>) => {
@@ -25,9 +26,23 @@ function ProfileWindow() {
         }
     }
 
-    const renderComponent = () => {
-        return <PasswordChangeForm/>;
-    }
+    useEffect(() => {
+        async function getData(){
+            try{
+                let response = await getProfileRequest();
+                console.log(response.data);
+                setUser(response.data);
+                setImage(response.data.profileImage) 
+            } catch(err) {
+                //setUserFindMessage("Invalid input")
+            }
+        }
+        getData();
+
+      },[]);
+
+
+
 
     let ProfileForm;
     let text;
@@ -47,23 +62,22 @@ function ProfileWindow() {
         <div className="profile__main col-md-10">
             <Formik
             initialValues={{
-                image : null
+                profileImage : null
             }}
 
             validationSchema = {Yup.object({
-                image : Yup.mixed()
+                profileImage : Yup.mixed()
                 .required('Image is required'),  
             })}
 
             onSubmit = {async (values,{setSubmitting, setStatus,resetForm}) =>  {   
-                if(values.image){
+                if(values.profileImage){
                     try{
+                        console.log(values.profileImage)
                         let response = await profileImageChangeRequest(values);
-                        setSubmitting(false);
-                        resetForm();
+                        setSubmitting(false);                      
                     } catch(err){
                         setSubmitting(false);
-                        resetForm();
                         setStatus({
                             errorMessage : err.message
                         });
@@ -74,15 +88,15 @@ function ProfileWindow() {
             {({ errors,touched,isSubmitting,status,setFieldValue}) => (
                 <Form>
                     <div className="profile__image__change">
-                        <img className="profile-image" src={image} alt=""/>
-                        <input type="file" accept="image/*" id="image" name = "image" onChange={(event) => {
-                            setFieldValue("image", event.currentTarget.files[0])
+                        <img className="profile-image" src={`data:image/jpeg;base64,${image}`} alt=""/>
+                        <input type="file" accept="image/*" id="image" name = "profileImage" onChange={(event) => {
+                            setFieldValue("profileImage", event.currentTarget.files[0])
                             onSelectFile(event);
                         }}></input>
                         <button className="profile__switch__button" type="submit">
                             {isSubmitting ? 'Saving ...' : 'Save profile image'}
                         </button>
-                        {errors.image && touched.image ? <div className="cm__products__create__container__validation">{errors.image}</div> : null}
+                        {errors.profileImage && touched.profileImage ? <div className="cm__products__create__container__validation">{errors.profileImage}</div> : null}
                         {status && status.errorMessage ? (<div className="validation">{status.errorMessage}</div>) : null}
                     </div>
                 </Form>

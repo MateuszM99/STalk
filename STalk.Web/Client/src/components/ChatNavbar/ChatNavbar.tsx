@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import './style.scss'
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
@@ -6,10 +6,14 @@ import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import Badge from '@material-ui/core/Badge';
 import { Link,useHistory } from 'react-router-dom';
+import {getUsersFriendsRequestsRequest} from '../../services/api/ContactsRequests'
+import {getProfileRequest} from '../../services/api/ProfileRequests'
 
 function ChatNavbar() {
 
     const history = useHistory();
+    const [friendsRequests,setFriendsRequests] = useState(null);
+    const [user,setUser] = useState(null);
 
     const signOut = () => {
         localStorage.setItem("userData",'')
@@ -17,13 +21,38 @@ function ChatNavbar() {
         history.push("/signIn");
     } 
 
+    const getUsersFriendsRequests = async() => {
+        try{
+            let response = await getUsersFriendsRequestsRequest();
+            console.log(response.data.addToContactRequests);
+            setFriendsRequests(response.data.addToContactRequests); 
+            //setUserFindMessage(response.data.message);
+        } catch(err) {
+           // setUserFindMessage("Invalid input")
+        }
+    }
+
+    useEffect(() => {
+        async function getData(){
+            try{
+                let response = await getProfileRequest();
+                console.log(response.data);
+                setUser(response.data); 
+            } catch(err) {
+                //setUserFindMessage("Invalid input")
+            }
+        }
+        getData();
+
+      },[]);
+
     return (
         <div className="col-md-2 border-right" style={{background: '#285d80'}}>
             <div className="nav__image__display">               
-                    <img src="https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg" alt=""/>
+                    <img src={`data:image/jpeg;base64,${user?.profileImage}`} alt=""/>
                     <div className="nav__image__display__text">
-                        <h6>Robo Cop</h6>    
-                        <p>somerandommail@gmail.com</p>                   
+                        <h6>{user?.username}</h6>    
+                        <p></p>                   
                     </div>
             </div>
             <div className="nav__tabs__display">
@@ -35,7 +64,7 @@ function ChatNavbar() {
                 </Link>
                 <Link to={`/sTalk/friends`}>
                 <div>
-                    <Badge badgeContent={4} color="error">
+                    <Badge badgeContent={friendsRequests == null ? 0 : friendsRequests.length} color="error">
                         <PeopleIcon style={{color : 'white'}}/>
                     </Badge>
                     <p>Friends</p>

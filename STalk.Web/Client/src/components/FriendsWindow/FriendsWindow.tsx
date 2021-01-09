@@ -23,6 +23,7 @@ function FriendsWindow() {
         if(userSearchString != null && userSearchString != ""){
             try{
                 let response = await getUsersRequest(userSearchString);
+                console.log(response.data.users);
                 setFoundUsers(response.data.users); 
                 setUserFindMessage(response.data.message);
             } catch(err) {
@@ -32,7 +33,6 @@ function FriendsWindow() {
     }
 
     useEffect(() => {
-        console.log(JSON.parse(localStorage.getItem('userData')).token);
         async function getData(){
             try{
                 let response = await getUsersContactsRequest();
@@ -69,7 +69,7 @@ function FriendsWindow() {
                 <div className="friends__add__friend border-bottom" style={foundUsers != null ? {display:'flex'} : {display: 'none'}}>
                     <p>{userFindMessage}</p>
                     {foundUsers?.map((user => 
-                        <AddFriend username={user.username} image={user.profileImage}/>
+                        <AddFriend username={user.username} status={user.userStatus} image={user.profileImage}/>
                         ))}
                 </div>
                 <div className="friends__friend__requests border-bottom">

@@ -28,7 +28,7 @@ export const FriendRequest: React.FC<Props> = ({id,username,image}) => {
 
     return (
         <div className="friends__friend__requests__user">
-            <img className="profile-image" alt=""/>
+            <img className="profile-image" src={`data:image/jpeg;base64,${image}`} alt=""/>
             <p>{username}</p>
             <span>
                 <button className="friends__action__button" onClick={() => acceptFriendsRequest(id)}>Accept</button>
