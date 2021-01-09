@@ -4,14 +4,16 @@ using EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210108191420_addContacts")]
+    partial class addContacts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,14 +29,12 @@ namespace EntityFramework.Migrations
                         .UseIdentityColumn();
 
                     b.Property<string>("UserFromId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserToId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserFromId");
 
                     b.HasIndex("UserToId");
 
@@ -364,15 +364,9 @@ namespace EntityFramework.Migrations
 
             modelBuilder.Entity("Domain.Models.AddToContactRequest", b =>
                 {
-                    b.HasOne("Domain.Models.User", "UserFrom")
-                        .WithMany()
-                        .HasForeignKey("UserFromId");
-
                     b.HasOne("Domain.Models.User", "UserTo")
                         .WithMany("AddToContactRequests")
                         .HasForeignKey("UserToId");
-
-                    b.Navigation("UserFrom");
 
                     b.Navigation("UserTo");
                 });

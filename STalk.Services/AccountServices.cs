@@ -6,9 +6,11 @@ using EntityFramework.DbContexts;
 using IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -79,7 +81,14 @@ namespace Services
                         UserId = user.Id
                     };
 
-                    await appDb.Files.AddAsync(profileImage);                   
+                    // remove previous profile image
+                    var previousProfileImage = await appDb.Files.Where(x => x.UserId == user.Id && x.Id == user.FileAvatarId).FirstOrDefaultAsync();
+                    appDb.Files.Remove(previousProfileImage);
+                    await appDb.SaveChangesAsync();
+ 
+                    // add new profile image
+                    await appDb.Files.AddAsync(profileImage);
+                    user.FileAvatarId = profileImage.Id;                   
                     await appDb.SaveChangesAsync();
                     return new AccountResponse { ResponseStatus = Status.Success, Message = "Succesfully changed profile image" };
                 }

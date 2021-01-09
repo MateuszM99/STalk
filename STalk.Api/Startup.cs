@@ -57,6 +57,7 @@ namespace STalk
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new UserProfile());
+                mc.AddProfile(new AddToContactRequestProfile());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

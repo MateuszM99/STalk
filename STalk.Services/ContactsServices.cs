@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Application.Responses;
 using Application.Enums;
+using AutoMapper;
+using Application.DTO;
 
 namespace Services
 {
@@ -17,10 +19,12 @@ namespace Services
     {
         private readonly MainDbContext appDb;
         private readonly UserManager<User> userManager;
-        public ContactsServices(MainDbContext appDb, UserManager<User> userManager)
+        private readonly IMapper mapper;
+        public ContactsServices(MainDbContext appDb, UserManager<User> userManager, IMapper mapper)
         {
             this.appDb = appDb;
             this.userManager = userManager;
+            this.mapper = mapper;
         }
         public async Task<ContactsResponse> AcceptAddToContactsRequest(User userAcceptingRequest,long addToContactsRequestId)
         {
@@ -29,8 +33,11 @@ namespace Services
             if(addRequest != null)
             {
                 var userSendingRequest = await userManager.FindByIdAsync(addRequest.UserFromId);
+                // user sending request does not exist anymore
                 if(userSendingRequest == null)
                 {
+                    appDb.AddToContactRequests.Remove(addRequest);
+                    await appDb.SaveChangesAsync();
                     return new ContactsResponse { Message = "User sending that request does not exist anymore", ResponseStatus = Status.Error };
                 }
 
@@ -46,26 +53,60 @@ namespace Services
             return new ContactsResponse { Message = "Did not find any add request with that id", ResponseStatus = Status.Error };
         }
 
+        public async Task<ContactsResponse> DeclineAddToContactsRequest(User userDecliningRequest, long addToContactsRequestId)
+        {
+            var addRequest = await appDb.AddToContactRequests.Where(u => u.UserTo.Id == userDecliningRequest.Id && u.Id == addToContactsRequestId).FirstOrDefaultAsync();
+           
+            if (addRequest != null)
+            {
+                var userSendingRequest = await userManager.FindByIdAsync(addRequest.UserFromId);
+                // user sending request does not exist anymore
+                if (userSendingRequest == null)
+                {
+                    appDb.AddToContactRequests.Remove(addRequest);
+                    await appDb.SaveChangesAsync();
+                    return new ContactsResponse { Message = "User sending that request does not exist anymore", ResponseStatus = Status.Error };
+                }
+
+                appDb.AddToContactRequests.Remove(addRequest);
+                await appDb.SaveChangesAsync();
+                return new ContactsResponse { Message = "Users request declined", ResponseStatus = Status.Success };                
+            }
+
+
+            return new ContactsResponse { Message = "Did not find any add request with that id", ResponseStatus = Status.Error };
+        }
+
         public async Task<ContactsResponse> FindUsersAsync(string searchString)
         {
             if(searchString != null)
             {
-                var users = await appDb.Users.Where(u => u.Email.Contains(searchString) || u.UserName.Contains(searchString)).ToListAsync();
+                var users = await appDb.Users
+                    .Include(u => u.Files)
+                    .Where(u => u.Email.Contains(searchString) || u.UserName.Contains(searchString))
+                    .ToListAsync();
+
                 if(users != null)
                 {
+                    var usersDTOS = mapper.Map<List<UserDTO>>(users);
                     string message = String.Format("Found {0} users", users.Count);
-                    return new ContactsResponse { Users = users, Message = message, ResponseStatus = Status.Success };
+                    return new ContactsResponse { Users = usersDTOS, Message = message, ResponseStatus = Status.Success };
                 }
-                return new ContactsResponse { Users = users, Message = "Did not found any user with given username or email", ResponseStatus = Status.Success };
+                return new ContactsResponse { Users = null, Message = "Did not found any user with given username or email", ResponseStatus = Status.Success };
             }
             return new ContactsResponse { Users = null, Message = "The request was incorrect", ResponseStatus = Status.Error };
         }
 
         public async Task<ContactsResponse> GetUsersContacts(User user)
         {
+            var usersConv = await appDb.ContactLists.ToListAsync();
+
             if(user != null)
             {
-                var userContactsList = await appDb.ContactLists.Include(c => c.Contacts).FirstOrDefaultAsync(c => c.UserId == user.Id);
+                var userContactsList = await appDb.ContactLists
+                    .Include(c => c.Contacts)
+                        .ThenInclude(c => c.User.Files)
+                    .FirstOrDefaultAsync(c => c.UserId == user.Id);
 
                 if(userContactsList == null)
                 {
@@ -73,8 +114,9 @@ namespace Services
                 }
 
                 var userContacts = userContactsList.Contacts.Select(c => c.User).ToList();
+                var userContactsDTOS = mapper.Map<List<UserDTO>>(userContacts);
                 string message = String.Format("You have {0} friends", userContacts.Count);
-                return new ContactsResponse { Users = userContacts, Message = message, ResponseStatus = Status.Success };
+                return new ContactsResponse { Users = userContactsDTOS, Message = message, ResponseStatus = Status.Success };
             }
             return new ContactsResponse { Users = null, Message = "User was not found", ResponseStatus = Status.Error };
         }
@@ -83,10 +125,12 @@ namespace Services
         {
             if(user != null)
             {
-                var usersFriendsRequests = await appDb.AddToContactRequests.Where(r => r.UserToId == user.Id).ToListAsync();
-                
+                var usersFriendsRequests = await appDb.AddToContactRequests.Where(r => r.UserToId == user.Id).Include(c => c.UserFrom).ToListAsync();
+
+                var usersFriendsRequestsDTO = mapper.Map<List<AddToContactRequestDTO>>(usersFriendsRequests);
+
                 string message = String.Format("You have {0} friend requests", usersFriendsRequests.Count);
-                return new ContactsResponse { AddToContactRequests = usersFriendsRequests, Message = message, ResponseStatus = Status.Success };
+                return new ContactsResponse { AddToContactRequests = usersFriendsRequestsDTO, Message = message, ResponseStatus = Status.Success };
             }
             
             return new ContactsResponse { Users = null, Message = "User was not found", ResponseStatus = Status.Error };
@@ -95,6 +139,11 @@ namespace Services
         public async Task<ContactsResponse> SendAddToContactsRequest(User userFrom,string usernameTo)
         {
             var userTo = await userManager.FindByNameAsync(usernameTo);
+
+            if(userFrom == userTo)
+            {
+                return new ContactsResponse { Message = "Bad request", ResponseStatus = Status.Error };
+            }
 
             if (userTo != null) {
                 AddToContactRequest addToContactRequest = new AddToContactRequest
@@ -125,7 +174,7 @@ namespace Services
 
                 return new ContactsResponse { Message = "You already sent request to that user", ResponseStatus = Status.Error };
             }
-            return new ContactsResponse { Message = "User you are trying to add does not exist", ResponseStatus = Status.Error }; ;
+            return new ContactsResponse { Message = "User you are trying to add does not exist", ResponseStatus = Status.Error };
         }
 
         private async Task<bool> AddUserToContactList(User userToAdd,string contactsListUserId)

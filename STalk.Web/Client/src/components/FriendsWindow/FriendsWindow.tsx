@@ -4,6 +4,7 @@ import {getUsersRequest,getUsersContactsRequest,getUsersFriendsRequestsRequest} 
 import AddFriend from './AddFriend'
 import FriendRequest from './FriendRequest'
 import Friend from './Friend'
+import axios from 'axios'
 
 function FriendsWindow() {
 
@@ -18,6 +19,7 @@ function FriendsWindow() {
     }
 
     const findUsers = async() => {
+
         if(userSearchString != null && userSearchString != ""){
             try{
                 let response = await getUsersRequest(userSearchString);
@@ -43,7 +45,8 @@ function FriendsWindow() {
 
             try{
                 let response = await getUsersFriendsRequestsRequest();
-                setFriendsRequests(response.data.users); 
+                console.log(response.data.addToContactRequests);
+                setFriendsRequests(response.data.addToContactRequests); 
                 //setUserFindMessage(response.data.message);
             } catch(err) {
                // setUserFindMessage("Invalid input")
@@ -51,7 +54,7 @@ function FriendsWindow() {
         }
         getData();
 
-      },[friends,friendsRequests]);
+      },[]);
 
     return (
         <div className="col-md-10">
@@ -71,14 +74,14 @@ function FriendsWindow() {
                 </div>
                 <div className="friends__friend__requests border-bottom">
                     <h6>Friend Requests</h6>
-                        {friendsRequests?.map((user =>
-                            <FriendRequest username={user.username} image={user.profileImage}/>
+                        {friendsRequests?.map((request =>
+                            <FriendRequest key={request.id} id={request.id} username={request.userFrom.username} image={request.userFrom.profileImage}/>
                             ))}
                 </div>
                 <div className="friends__friends__list border-bottom">
                 <h6>Friends</h6>
                     {friends?.map((user => 
-                        <Friend username={user.username} image={user.image}/>
+                        <Friend  username={user.username} image={user.image}/>
                         ))}
                 </div>
             </div>

@@ -1,4 +1,5 @@
 ﻿using Application.Enums;
+using Application.RequestsModels;
 using Application.Responses;
 using Application.ViewModels;
 using Domain.Models;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -154,12 +156,12 @@ namespace STalk.Api.Controllers
 
         [HttpPost]
         [Route("addToContacts")]
-        public async Task<IActionResult> SendAddToContactsRequest([FromBody] string username)
+        public async Task<IActionResult> SendAddToContactsRequest([FromBody]StringRequest username)
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
-            if(user != null && !String.IsNullOrWhiteSpace(username))
+            if(user != null && !String.IsNullOrWhiteSpace(username.String))
             {
-                ContactsResponse response = await contactsServices.SendAddToContactsRequest(user, username);
+                ContactsResponse response = await contactsServices.SendAddToContactsRequest(user, username.String);
                 if (response.ResponseStatus == Status.Success)
                 {
                     return Ok(response);
@@ -171,7 +173,7 @@ namespace STalk.Api.Controllers
 
         [HttpPost]
         [Route("acceptAddToContacts")]
-        public async Task<IActionResult> AcceptAddToContactsRequest([FromBody] long addToContactsRequestId)
+        public async Task<IActionResult> AcceptAddToContactsRequest([FromBody]long addToContactsRequestId)
         {
             var user = await userManager.GetUserAsync(HttpContext.User);
             if(user != null)
@@ -185,5 +187,23 @@ namespace STalk.Api.Controllers
             }
             return StatusCode(StatusCodes.Status400BadRequest);
         }
+
+        [HttpPost]
+        [Route("declineAddToContacts")]
+        public async Task<IActionResult> DeclineAddToContactsRequest([FromBody]long addToContactsRequestId)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
+            {
+                ContactsResponse response = await contactsServices.DeclineAddToContactsRequest(user, addToContactsRequestId);
+                if (response.ResponseStatus == Status.Success)
+                {
+                    return Ok(response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
     }
 }

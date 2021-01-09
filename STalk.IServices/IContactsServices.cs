@@ -14,6 +14,7 @@ namespace IServices
         Task<ContactsResponse> SendAddToContactsRequest(User userFrom,string usernameTo);
         Task<ContactsResponse> GetUsersFriendsRequests(User user);
         Task<ContactsResponse> AcceptAddToContactsRequest(User user,long addToContactsRequestId);
+        Task<ContactsResponse> DeclineAddToContactsRequest(User user, long addToContactsRequestId);
 
     }
 }
