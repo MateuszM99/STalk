@@ -38,7 +38,7 @@ function FriendsWindow() {
                 let response = await getUsersContactsRequest();
                 setFriends(response.data.users); 
                 //setUserFindMessage(response.data.message);
-                console.log(response);
+                console.log(response.data.users);
             } catch(err) {
                 //setUserFindMessage("Invalid input")
             }
@@ -81,7 +81,7 @@ function FriendsWindow() {
                 <div className="friends__friends__list border-bottom">
                 <h6>Friends</h6>
                     {friends?.map((user => 
-                        <Friend  username={user.username} image={user.image}/>
+                        <Friend  username={user.username} image={user.profileImage}/>
                         ))}
                 </div>
             </div>

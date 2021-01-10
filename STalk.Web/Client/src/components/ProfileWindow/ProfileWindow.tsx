@@ -19,7 +19,7 @@ function ProfileWindow() {
             const reader = new FileReader();
     
             reader.readAsDataURL(file);
-    
+            
             reader.onload = () => {
                 setImage(reader.result as string);
             }
