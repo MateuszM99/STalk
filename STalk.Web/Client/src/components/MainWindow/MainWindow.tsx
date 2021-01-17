@@ -12,7 +12,7 @@ function MainWindow() {
         <div className="container fill">
             <div className="row fill no-gutters">
                 <ChatNavbar></ChatNavbar>
-                <Route exact path={"/sTalk/chat"}>
+                <Route exact path={"/sTalk/chat/:chatId"}>
                     <ChatsList/>
                     <ChatWindow/>
                 </Route>

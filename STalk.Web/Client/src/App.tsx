@@ -28,7 +28,7 @@ export default() => (
         </Route>
         <PrivateRoute path='/sTalk' component={MainWindow}/>
         <Route exact path="/">
-            <Redirect to="/sTalk/chat" />
+            <Redirect to="/sTalk/chat"/>
         </Route>
     </div>
 );

@@ -49,7 +49,8 @@ function ChatWindow() {
                     <div className="col-12">
                         <div className="chat-box-tray">
                             <input type="text" placeholder="Type your message here..."/>
-                            <SendIcon/>
+                            <input type="file"/>
+                            <SendIcon style={{marginRight:'20px'}} />
                         </div>
                     </div>
                 </div>    

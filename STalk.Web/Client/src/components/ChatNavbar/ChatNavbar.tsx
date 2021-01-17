@@ -14,6 +14,7 @@ function ChatNavbar() {
     const history = useHistory();
     const [friendsRequests,setFriendsRequests] = useState(null);
     const [user,setUser] = useState(null);
+    const [chatId,setChatId] = useState(2);
 
     const signOut = () => {
         localStorage.setItem("userData",'')
@@ -38,6 +39,7 @@ function ChatNavbar() {
                 let response = await getProfileRequest();
                 console.log(response.data);
                 setUser(response.data); 
+                // set latest chatId
             } catch(err) {
                 //setUserFindMessage("Invalid input")
             }
@@ -56,7 +58,7 @@ function ChatNavbar() {
                     </div>
             </div>
             <div className="nav__tabs__display">
-                <Link to={`/sTalk/chat`}>
+                <Link to={`/sTalk/chat/${chatId}`}>
                     <div>
                         <ChatBubbleIcon style={{color : 'white'}}/>
                         <p>Conversations</p>
