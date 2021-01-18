@@ -1,6 +1,29 @@
 $blue: #285d80;
 
 
+.add__to__conversation{
+  display: flex;
+  align-items: center;
+  justify-self: flex-end;
+  margin-left: auto;
+  margin-right: 50px;
+
+  input{
+    padding-left: 15px;
+  }
+
+  button{
+      color: white;
+      background-color:  #285d80;
+      padding: 7px;
+      border-radius: 20px;
+      width: 100px;
+      margin-right: 20px;
+      margin-left: 15px;
+      cursor: pointer;
+  }
+}
+
 .chat-panel{
   height: 84vh;
   max-height: 84vh;

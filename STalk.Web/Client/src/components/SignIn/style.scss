@@ -186,6 +186,9 @@
     height: 50px;
     border-radius: 25px;
     padding: 0 30px 0 68px;
+    &::placeholder{
+      color: rgb(160, 158, 158);
+    }
   }
   
   @-webkit-keyframes anim-shadow {

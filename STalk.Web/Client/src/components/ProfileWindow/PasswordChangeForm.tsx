@@ -20,15 +20,15 @@ function PasswordChangeForm() {
                 <Form>
                     <span>
                         <label>Enter old password</label>
-                        <input type="text"></input>
+                        <input type="text" placeholder="Enter old password"></input>
                     </span>
                     <span>
                         <label>Enter new password</label>
-                        <input type="text"></input>
+                        <input type="text" placeholder="Enter new password"></input>
                     </span>
                     <span>
                         <label>Confirm new password</label>
-                        <input type="text"></input>
+                        <input type="text" placeholder="Enter new password again"></input>
                     </span>
                     <button className="profile__switch__button">Save changes</button>
                 </Form>
