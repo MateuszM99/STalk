@@ -8,6 +8,7 @@ namespace Domain.Models
     public class User : IdentityUser
     {
         public long FileAvatarId { get; set; }       
+        public string ConnectionId { get; set; }
         public virtual ContactList ContactList { get; set; }
        
         public virtual List<AddToContactRequest> AddToContactRequests { get; set; }

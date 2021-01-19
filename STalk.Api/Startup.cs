@@ -6,6 +6,7 @@ using IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Services;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace STalk
 {
@@ -49,10 +51,6 @@ namespace STalk
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.AddScoped<IAuthenticationServices, AuthenticationServices>();
-            services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IContactsServices, ContactsServices>();
-            services.AddScoped<IAccountServices, AccountServices>();
 
             var mapperConfig = new MapperConfiguration(mc =>
             {
@@ -72,6 +70,7 @@ namespace STalk
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
+                //options.ClaimsIssuer = 
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
@@ -80,8 +79,32 @@ namespace STalk
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/hub")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IAuthenticationServices, AuthenticationServices>();
+            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IContactsServices, ContactsServices>();
+            services.AddScoped<IAccountServices, AccountServices>();
+            services.AddScoped<IChatService, ChatService>();
+            services.AddSignalR();
 
         }
 
@@ -111,11 +134,12 @@ namespace STalk
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<Services.Hubs.ChatHub>("/hub");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-            });
 
+            });
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "../STalk.Web/Client";

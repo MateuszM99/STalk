@@ -13,6 +13,9 @@ namespace Domain.Models
         public long ConversationId { get; set; }
         public virtual Conversation Conversation { get; set; }
 
+        /// <summary>
+        /// User sending message
+        /// </summary>
         public string UserId { get; set; }
         public virtual User User { get; set; }
     }

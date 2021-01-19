@@ -1,3 +1,5 @@
+import * as signalR from '@microsoft/signalr'
+
 // In production, we register a service worker to serve assets from local cache.
 
 // This lets the app load faster on subsequent visits in production, and gives
@@ -7,6 +9,25 @@
 
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
+let connection: signalR.HubConnection;
+connection = null;
+
+export async function createSignalR() {
+    return new Promise<signalR.HubConnection>((resolve, reject) => {
+        if (connection == null) {
+            console.log("Setting new connection")
+            connection = new signalR.HubConnectionBuilder().withUrl("/hub?userId=" + JSON.parse(localStorage.getItem("userData")).user.id).build();
+            connection.start().then(() => {
+                localStorage.setItem("connectionId", connection.connectionId);
+                resolve(connection);
+            });
+        }
+        else {
+            console.log("Connection exists")
+            resolve(connection);
+        }
+    })
+}
 
 const isLocalhost = Boolean(
     window.location.hostname === 'localhost' ||

@@ -26,7 +26,7 @@ namespace Services
             this.appDb = appDb;
             this.userManager = userManager;
             this.emailSender = emailSender;
-    }
+        }
         public async Task<AccountResponse> ChangeEmailAsync(User user,EmailChangeViewModel emailChangeViewModel)
         {
             if(user != null)
