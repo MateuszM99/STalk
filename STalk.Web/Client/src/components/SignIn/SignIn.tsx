@@ -20,8 +20,9 @@ function SignIn() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}` 
     }
 
-    const history = useHistory(); 
-    const token = JSON.parse(localStorage.getItem('userData')) == null ? null : JSON.parse(localStorage.getItem('userData')).token;  
+    const history = useHistory();    
+    const token = null;
+    console.log(token);
     if(token != null){
         return (
             <Redirect to="/sTalk/chat"/>

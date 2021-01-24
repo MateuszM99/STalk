@@ -10,7 +10,8 @@ interface MyToken {
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   useEffect(() => {
-    let user = JSON.parse(localStorage.getItem('userData'));
+      let user = JSON.parse(localStorage.getItem('userData'));
+      console.log(user);
         if(user != null){          
             let token = user.token;
             let tokenExpiration = jwt_decode<MyToken>(token).exp;

@@ -99,11 +99,11 @@ namespace Services
                     var usersDTOS = mapper.Map<List<UserDTO>>(users);
                     foreach (var foundUser in usersDTOS)
                     {
-                        if(userContactsList.Contacts.Find(u => u.UserId == foundUser.Id) != null)
+                        if(userContactsList?.Contacts.Find(u => u.UserId == foundUser.Id) != null)
                         {
                             foundUser.UserStatus = UserStatus.Friend;
                         }
-                        else if (userAddToContactsRequest.Find(r => r.UserToId == foundUser.Id) != null)
+                        else if (userAddToContactsRequest?.Find(r => r.UserToId == foundUser.Id) != null)
                         {
                             foundUser.UserStatus = UserStatus.Added;
                         }
@@ -213,7 +213,8 @@ namespace Services
                 {
                     userContactsList = new ContactList
                     {
-                        UserId = contactsListUserId
+                        UserId = contactsListUserId,
+                        Contacts = new List<ContactListUser>()
                     };
 
                     await appDb.ContactLists.AddAsync(userContactsList);
@@ -222,7 +223,7 @@ namespace Services
 
                 if(userContactsList != null)
                 {
-                    var userContact = userContactsList.Contacts.Where(c => c.UserId == userToAdd.Id).FirstOrDefault();
+                    var userContact = userContactsList?.Contacts.Where(c => c.UserId == userToAdd.Id).FirstOrDefault();
                     if(userContact != null)
                     {
                         return false;
