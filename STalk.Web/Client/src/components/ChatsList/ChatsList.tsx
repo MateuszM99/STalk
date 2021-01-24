@@ -26,10 +26,10 @@ class ChatsList extends React.Component {
     }
     constructor(props) {
         super(props);
-        /*worker.createSignalR().then((resolve) => {
+        worker.createSignalR().then((resolve) => {
             connection = resolve
             connection.invoke("GetConversationsCount");
-            connection.invoke("GetConversations");
+            //connection.invoke("GetConversations");
             connection.on("UpdateConversationCount", (count) => {
                 console.log("pobrałem ilość konwersacji!!")
                 console.log(count);
@@ -41,7 +41,7 @@ class ChatsList extends React.Component {
                 console.log(conversations);
                 this.setState({ conversations: conversations })
             })
-        })*/
+        })
     }
 
     async componentDidMount(){

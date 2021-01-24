@@ -16,22 +16,28 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
             let token = user.token;
             let tokenExpiration = jwt_decode<MyToken>(token).exp;
             let dateNow = new Date();
-
-            if(tokenExpiration < dateNow.getTime()/1000){            
-              setIsAuthenticated(false)
+            console.log("User found!")
+            console.log(user)
+            if (tokenExpiration < dateNow.getTime() / 1000) {
+                localStorage.setItem('userData', null) 
+                setIsAuthenticated(false)
             } else {              
-              setIsAuthenticated(true);
+                setIsAuthenticated(true);
             }
         } else {     
+            console.log("User not found")
           setIsAuthenticated(false)
         }
   },[isAuthenticated])
 
-  if(isAuthenticated == null){
+    if (isAuthenticated == null) {
+        console.log("Not authenticated");
       return (
           <div>Waiting</div>
             )
-        }
+    }
+    console.log("Funnyif: ")
+    console.log(isAuthenticated)
     return (
     <Route {...rest} render={props =>
       isAuthenticated  ? (

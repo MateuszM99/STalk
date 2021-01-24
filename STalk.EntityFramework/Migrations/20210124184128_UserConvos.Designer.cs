@@ -4,14 +4,16 @@ using EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210124184128_UserConvos")]
+    partial class UserConvos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +81,7 @@ namespace EntityFramework.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ContactListUsers");
+                    b.ToTable("ContactListUser");
                 });
 
             modelBuilder.Entity("Domain.Models.Conversation", b =>
@@ -124,9 +126,6 @@ namespace EntityFramework.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("ConversationId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("FileId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Text")

@@ -14,31 +14,11 @@ class MainWindow extends React.Component {
 
     constructor(props) {
         super(props);
-        /*if (localStorage.getItem('userData') != null) {
+        if (localStorage.getItem('userData') != null) {
             worker.createSignalR().then((resolve) => {
                 connection = resolve
-                connection.invoke("GetMyMessages");
-                connection.on("UpdateAll", function (messages) {
-                    console.log("Pobrałem wszystkie wiadomości usera! (odświeżył stronę)");
-                    console.log(messages);
-                    localStorage.setItem("messages", messages);
-                });
-                connection.on("RecievePrivateMessage", (senderId, message) => {
-                    console.log("Odebrano wiadomość od: " + senderId)
-                    console.log("Wiadomość: " + message)
-                });
-            })*/
-
-            //connection = worker.createSignalR();
-
-            //connection.invoke("SendMessage", friendId, message);
-            //console.log(connection)
-            //connection.on("SendPrivateMessage")
-            //connection.on("recievedPrivate", (fromUser, message) => {
-            //    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            //    var encodedMsg = fromUser + " says " + msg;
-            //});
-        //}
+            });
+        }
     }
 
     render() {

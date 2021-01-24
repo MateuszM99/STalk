@@ -18,5 +18,7 @@ namespace Domain.Models
         /// </summary>
         public string UserId { get; set; }
         public virtual User User { get; set; }
+
+        public long? FileId { get; set; }
     }
 }

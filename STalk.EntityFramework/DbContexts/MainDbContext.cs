@@ -20,11 +20,11 @@ namespace EntityFramework.DbContexts
         //public DbSet<User> Users { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<UserConversation> UserConversations { get; set; }
         public DbSet<AddToContactRequest> AddToContactRequests { get; set; }
         public DbSet<ContactListUser> ContactListUsers { get; set; }
         public DbSet<ContactList> ContactLists { get; set; }
         public DbSet<File> Files { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

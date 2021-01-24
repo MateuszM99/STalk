@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -32,29 +31,38 @@ namespace Services
             this.emailSender = emailSender;
         }
 
-        public async Task AddMessageToDb(string userToId, string userSenderId, string message)
+        public async Task AddMessageToDb(long conversationId, string userSenderId, string message, long? fileId)
         {
             User sender = await userManager.FindByIdAsync(userSenderId);
-            User reciever = await userManager.FindByIdAsync(userToId);
-            Conversation bothConversation = sender.Conversations?.Intersect(reciever.Conversations).SingleOrDefault(); // czy jak maja wspolna grupowa konwersacje to nie wyjebie im wlasnie tej konwersacji ? Jakby ci tu coś wywalało zmień na FirstOrDefault() zaoszczędzisz sporo czasu
-            if(bothConversation == null)
+            //User reciever = await userManager.FindByIdAsync(userToId);
+            Conversation conversationToSend = await appDb.Conversations.Include(x => x.Messages).SingleOrDefaultAsync(x => x.Id == conversationId);
+            //Conversation bothConversation = sender.Conversations?.Intersect(reciever.Conversations).SingleOrDefault(); // czy jak maja wspolna grupowa konwersacje to nie wyjebie im wlasnie tej konwersacji ? Jakby ci tu coś wywalało zmień na FirstOrDefault() zaoszczędzisz sporo czasu
+            //if(bothConversation == null)
+            //{
+            //    if(sender.Conversations.Intersect(reciever.Conversations).Count() > 1)
+            //    {
+            //        throw new Exception("Something went terribly wrong!");
+            //    }
+            //    bothConversation = new Conversation();
+            //    bothConversation.Users = new List<User>();
+            //    bothConversation.Users.Add(sender);
+            //    bothConversation.Users.Add(reciever);
+            //    appDb.Conversations.Add(bothConversation);
+            //}
+            conversationToSend.Messages.Add(new Message()
             {
-                if(sender.Conversations.Intersect(reciever.Conversations).Count() > 1)
-                {
-                    throw new Exception("Something went terribly wrong!");
-                }
-                bothConversation = new Conversation();
-                bothConversation.Users = new List<User>();
-                bothConversation.Users.Add(sender);
-                bothConversation.Users.Add(reciever);
-                appDb.Conversations.Add(bothConversation);
-            }
-            bothConversation.Messages.Add(new Message()
-            {
-                Conversation = bothConversation,
+                Conversation = conversationToSend,
                 Text = message,
-                User = sender
+                User = sender,
+                FileId = fileId
             });
+            appDb.SaveChanges();
+        }
+        public List<string> GetConversationUsers(long conversationId)
+        {
+            return appDb.UserConversations.Where(x => x.ConversationId == conversationId).Select(x => x.UserId).ToList();
+            //Conversation conversation = appDb.Conversations.Include(x => x.Users).SingleOrDefault(x => x.Id == conversationId);
+            //return conversation.Users.Select(x => x.Id).ToList();
         }
         public async Task<string> GetUserConnectionId(string userId)
         {
@@ -79,7 +87,8 @@ namespace Services
         }
         public int GetConversationCount(string userId)
         {
-            return appDb.Users.Single(x => x.Id == userId).Conversations?.Count() ?? 0;
+            var appUser = appDb.Users.Include(x => x.Conversations).Single(x => x.Id == userId);
+            return appUser.Conversations?.Count() ?? 0;
         }
         public Task RemoveUserConnectionId(string connectionId)
         {
@@ -97,15 +106,17 @@ namespace Services
             var conversationIds = conversationUser.Where(x => x.User.Id == userId).Select(x => x.ConversationId);
             if(conversationIds.Any())
             {
-                var conversations = appDb.Conversations.Where(x => conversationIds.Contains(x.Id))
+                var conversationsX = appDb.Conversations.Include(x => x.Users).Where(x => conversationIds.Contains(x.Id)).Select(x => new { x.Users, x.Messages, x.Id }).ToList();
+                var conversations = appDb.Conversations.Include(x => x.Users).Where(x => conversationIds.Contains(x.Id)).ToList();
+                var conversationsSelect = conversationsX
                     .Select(x => new
                     {
                         Users = x.Users.Where(x => x.Id != userId).Select(x => x.UserName).Aggregate((i, j) => i + ", " + j),
                         Reciever = x.Users.FirstOrDefault(x => x.Id != userId).Id,
-                        LastMsg = x.Messages.Last().Text,
-                        LastSendByMe = x.Messages.Last().UserId == userId
+                        LastMsg = x.Messages.Any() ? x.Messages.Last().Text : "",
+                        LastSendByMe = x.Messages.Any() ? x.Messages.Last().UserId == userId : false
                     });
-                return conversations.Select(x => new ConversationDTO()
+                return conversationsSelect.Select(x => new ConversationDTO()
                 {                   
                     LastSendByMe = x.LastSendByMe,
                     LastMessage = x.LastMsg,
@@ -154,8 +165,34 @@ namespace Services
                 return null;
             }
         }
-
-
+        public async Task<List<MessageDTO>> GetConversationMessages(long conversationId, string userId)
+        {
+            var xasd = appDb.Conversations.Include(x => x.Messages).FirstOrDefault(asd => asd.Id == conversationId);
+            Conversation conversation = await appDb.Conversations.Include(x => x.Messages).SingleAsync(x => x.Id == conversationId);
+            return conversation.Messages.Select(x => new MessageDTO
+            {
+                Message = x.Text,
+                SendByMe = x.UserId == userId,
+                SenderId = x.UserId,
+                FileId = x.FileId
+            }).ToList();
+        }
+        public long AddFileToDb(byte[] fileContent, string ext, string userId)
+        {
+            Domain.Models.File file = new Domain.Models.File()
+            {
+                FileContent = fileContent,
+                FileExtension = ext,
+                UserId = userId
+            };
+            appDb.Files.Add(file);
+            appDb.SaveChanges();
+            return file.Id;
+        }
+        public async Task<File> GetFileFromDb(long fileId)
+        {
+            return await appDb.Files.SingleOrDefaultAsync(x => x.Id == fileId);
+        }
 
     }
 }

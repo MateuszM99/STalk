@@ -14,8 +14,10 @@ export const  FriendChat: React.FC<Props> = ({conversationId,lastMessage,recieve
 
     const history = useHistory();
 
-    const onFriendDrawerClick = async (conversationId,reciverId) => {
-        if(conversationId == null){
+    const onFriendDrawerClick = async (conversationId, reciverId) => {
+        console.log('convIt: ' + conversationId)
+        console.log('recieverId: ' + reciverId)
+        if (conversationId == null) {
             try{
                 let response = await getConversationRequest(reciverId);
                 console.log(response.data.id);

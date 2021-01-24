@@ -1,4 +1,5 @@
 import * as signalR from '@microsoft/signalr'
+import { connect } from 'net';
 
 // In production, we register a service worker to serve assets from local cache.
 
@@ -26,7 +27,7 @@ export async function createSignalR() {
             console.log("Connection exists")
             resolve(connection);
         }
-    })
+    });
 }
 
 const isLocalhost = Boolean(

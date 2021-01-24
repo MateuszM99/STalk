@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTO;
+using Application.Helpers;
 using Domain.Models;
 using IServices;
 using Microsoft.AspNetCore.Http;
@@ -25,21 +26,29 @@ namespace Services.Hubs
             _httpContextAccessor = httpContextAccessor;
 
         }
-        public async Task SendMessage(string toUserId, string message)
+        public async Task SendMessage(string conversationId, string message, long? fileId)
         {
+            long convId = long.Parse(conversationId);
             string senderId = _httpContextAccessor.HttpContext.Request.Query["userId"];
-            await _chatService.AddMessageToDb(toUserId, senderId, message);
-            string recieverConnectionId = await _chatService.GetUserConnectionId(toUserId);
+            await _chatService.AddMessageToDb(convId, senderId, message, fileId);
+            List<string> conversationUsers = _chatService.GetConversationUsers(convId);
             string senderConnectionId = Context.ConnectionId;
-            if(recieverConnectionId == null)
+            await conversationUsers.ForEachAsync(async (x) =>
             {
+                string recieverConnectionId = await _chatService.GetUserConnectionId(x);
+                if(recieverConnectionId != null)
+                {
+                    await Clients.Client(recieverConnectionId).SendAsync("RecievePrivateMessage", senderId, message);
+                }
+            });
+            //if(recieverConnectionId == null)
+            //{
 
-            }
-            else
-            {
-                await Clients.Client(recieverConnectionId).SendAsync("RecievePrivateMessage", senderId, message);
-                //Clients.Client(senderConnectionId).SendAsync("SendPrivateMessage", recieverConnectionId, message);
-            }
+            //}
+            //else
+            //{
+            //    //Clients.Client(senderConnectionId).SendAsync("SendPrivateMessage", recieverConnectionId, message);
+            //}
         }
         public async Task GetMyMessages()
         {
@@ -47,18 +56,27 @@ namespace Services.Hubs
             List<MessageDTO> messages = _chatService.GetAllUserMessages(userId);
             await Clients.Client(Context.ConnectionId).SendAsync("UpdateAll", messages);
         }
+        public async Task GetConversationMessages(string conversationId)
+        {
+            if(conversationId != null && conversationId != "show")
+            {
+                string userId = _httpContextAccessor.HttpContext.Request.Query["userId"];
+                List<MessageDTO> messages = await _chatService.GetConversationMessages(long.Parse(conversationId), userId);
+                await Clients.Client(Context.ConnectionId).SendAsync("LoadConversation", messages);
+            }
+        }
         public async Task GetConversationsCount()
         {
             string userId = _httpContextAccessor.HttpContext.Request.Query["userId"];
             int convoCount = _chatService.GetConversationCount(userId);
             await Clients.Client(Context.ConnectionId).SendAsync("UpdateConversationCount", convoCount);
         }
-        public async Task GetConversations()
-        {
-            string userId = _httpContextAccessor.HttpContext.Request.Query["userId"];
-            List<ConversationDTO> conversations = _chatService.GetConversations(userId);
-            await Clients.Client(Context.ConnectionId).SendAsync("UpdateConversations", conversations);
-        }
+        //public async Task GetConversations()
+        //{
+        //    string userId = _httpContextAccessor.HttpContext.Request.Query["userId"];
+        //    List<ConversationDTO> conversations = _chatService.GetConversations(userId);
+        //    await Clients.Client(Context.ConnectionId).SendAsync("UpdateConversations", conversations);
+        //}
         public async Task GetConversationOfUsers(string userId2)
         {
             string userId1 = _httpContextAccessor.HttpContext.Request.Query["userId"];
