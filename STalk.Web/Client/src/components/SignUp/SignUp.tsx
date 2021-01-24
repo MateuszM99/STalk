@@ -10,7 +10,8 @@ import * as Yup from 'yup'
 function SignUp() {
     const history = useHistory();
 
-    if(localStorage.getItem('userData') != null){
+    const token = JSON.parse(localStorage.getItem('userData')) == null ? null : JSON.parse(localStorage.getItem('userData')).token;
+    if(token != null){
         return (
             <Redirect to="/sTalk/chat"/>
         )

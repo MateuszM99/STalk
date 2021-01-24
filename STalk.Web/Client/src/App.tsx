@@ -26,9 +26,9 @@ export default() => (
         <Route exact path="/reset">
             <PasswordResetWindow/>
         </Route>
-        <PrivateRoute path='/sTalk/chat' component={MainWindow}/>
+        <PrivateRoute path='/sTalk' component={MainWindow}/>
         <Route exact path="/">
-            <Redirect to="/sTalk/chat"/>
+            <Redirect to="/sTalk/chat/show"/>
         </Route>
     </div>
 );

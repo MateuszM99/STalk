@@ -20,9 +20,9 @@ function SignIn() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}` 
     }
 
-    const history = useHistory();   
-
-    if(localStorage.getItem('userData') != null){
+    const history = useHistory(); 
+    const token = JSON.parse(localStorage.getItem('userData')) == null ? null : JSON.parse(localStorage.getItem('userData')).token;  
+    if(token != null){
         return (
             <Redirect to="/sTalk/chat"/>
         )
@@ -57,7 +57,7 @@ function SignIn() {
                                 //setAxiosInterceptors(response.data);
                                 setSubmitting(false);
                                 resetForm();
-                                history.push("/sTalk/chat");
+                                history.push("/sTalk/chat/show");
                             } catch(err){
                                 setSubmitting(false);
                                 resetForm();

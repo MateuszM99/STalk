@@ -5,11 +5,21 @@ import Message from './Message';
 import ReplyMessage from './ReplyMessage';
 import AddIcon from '@material-ui/icons/Add';
 import * as worker from '../../registerServiceWorker'
+import {RouteComponentProps,Link,withRouter} from  "react-router-dom"
 
 let connection: signalR.HubConnection;
 
-class ChatWindow extends React.Component {
+type PathParamsType = {
+    chatId? : string,
+}
+
+type PropsType = RouteComponentProps<PathParamsType> & {
+  
+}
+
+class ChatWindow extends React.Component<PropsType> {
     state = {
+        chatId : null,
         userId: "",
         message: ""
     }
@@ -23,6 +33,22 @@ class ChatWindow extends React.Component {
         }
         this.handleChange = this.handleChange.bind(this);
         this.checkForEnterToSend = this.checkForEnterToSend.bind(this);
+    }
+
+    componentDidMount(){
+        if(this.state.chatId != this.props.match.params.chatId){
+            this.setState({chatId : this.props.match.params.chatId });
+        }
+
+        // tu pobierasz konwersacje z tym id czatu
+    }
+
+    componentDidUpdate(){
+        if(this.state.chatId != this.props.match.params.chatId){
+            this.setState({chatId : this.props.match.params.chatId });
+        }
+
+        // tu pobierasz konwersacje pod warunkiem ze zmienilo sie id chatu
     }
 
     checkForEnterToSend(event: React.KeyboardEvent) {
@@ -39,6 +65,13 @@ class ChatWindow extends React.Component {
     }
 
     render() {
+
+        if(this.state.chatId == "show"){
+            return (
+                <div></div>
+            )
+        }
+
         return (
             <div className="col-md-8 flex">
                 <div className="settings-tray">
@@ -93,4 +126,4 @@ class ChatWindow extends React.Component {
     }
 }
 
-export default ChatWindow
+export default withRouter(ChatWindow);

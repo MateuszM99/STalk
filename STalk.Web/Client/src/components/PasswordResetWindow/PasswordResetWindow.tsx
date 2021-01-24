@@ -9,7 +9,8 @@ function PasswordResetWindow() {
     const history = useHistory();
     const queryParams = new URLSearchParams(history.location.search)
 
-    if(localStorage.getItem('userData') != null){
+    const token = JSON.parse(localStorage.getItem('userData')) == null ? null : JSON.parse(localStorage.getItem('userData')).token;
+    if(token != null){
         return (
             <Redirect to="/sTalk/chat"/>
         )

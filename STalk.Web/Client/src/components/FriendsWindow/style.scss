@@ -29,6 +29,9 @@
     padding: 7px;
     border-radius: 20px;
     width: 100px;
+    &:hover{
+        background-color: #567386;
+    }
 }
 
 .friends__add__friend{
@@ -44,6 +47,9 @@
     button{
         margin-left: auto;
         justify-self: flex-end;
+        &:hover{
+            background-color: #567386;
+        }
     }
 
     div{
@@ -74,6 +80,9 @@
         justify-self: flex-end;
         button{
             margin-left: 15px;
+            &:hover{
+                background-color: #567386;
+            }
         }
     }
 }

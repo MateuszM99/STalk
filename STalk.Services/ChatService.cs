@@ -1,4 +1,5 @@
-﻿using Application.DTO;
+﻿using Application.Comparers;
+using Application.DTO;
 using Application.Enums;
 using Application.Responses;
 using Application.ViewModels;
@@ -35,7 +36,7 @@ namespace Services
         {
             User sender = await userManager.FindByIdAsync(userSenderId);
             User reciever = await userManager.FindByIdAsync(userToId);
-            Conversation bothConversation = sender.Conversations?.Intersect(reciever.Conversations).SingleOrDefault();
+            Conversation bothConversation = sender.Conversations?.Intersect(reciever.Conversations).SingleOrDefault(); // czy jak maja wspolna grupowa konwersacje to nie wyjebie im wlasnie tej konwersacji ? Jakby ci tu coś wywalało zmień na FirstOrDefault() zaoszczędzisz sporo czasu
             if(bothConversation == null)
             {
                 if(sender.Conversations.Intersect(reciever.Conversations).Count() > 1)
@@ -43,6 +44,7 @@ namespace Services
                     throw new Exception("Something went terribly wrong!");
                 }
                 bothConversation = new Conversation();
+                bothConversation.Users = new List<User>();
                 bothConversation.Users.Add(sender);
                 bothConversation.Users.Add(reciever);
                 appDb.Conversations.Add(bothConversation);
@@ -104,7 +106,7 @@ namespace Services
                         LastSendByMe = x.Messages.Last().UserId == userId
                     });
                 return conversations.Select(x => new ConversationDTO()
-                {
+                {                   
                     LastSendByMe = x.LastSendByMe,
                     LastMessage = x.LastMsg,
                     RecieverId = x.Reciever,
@@ -116,5 +118,44 @@ namespace Services
                 return new List<ConversationDTO>();
             }
         }
+
+        public async Task<ConversationDTO> GetConversationOfUsers(string userId1,string userId2)
+        {
+            if(!String.IsNullOrWhiteSpace(userId1) && !String.IsNullOrWhiteSpace(userId2))
+            {                
+                var conversationsWithTwoUsersIds = appDb.Conversations
+                    .Include(u => u.Users)
+                    .Where(u => u.Users.Count == 2)
+                    .ToList();
+                    
+
+                var user1 = await appDb.Users.Include(u => u.Conversations).Where(u => u.Id == userId1).SingleOrDefaultAsync();
+                var user2 = await appDb.Users.Include(u => u.Conversations).Where(u => u.Id == userId2).SingleOrDefaultAsync();
+                ConversationComparer conversationComparer = new ConversationComparer();
+                Conversation conversation = user1.Conversations?.Intersect(user2.Conversations,conversationComparer).Intersect(conversationsWithTwoUsersIds,conversationComparer).FirstOrDefault();
+
+                if (conversation == null)
+                {                   
+                    conversation = new Conversation();
+                    conversation.Users = new List<User>();
+                    conversation.Users.Add(user1);
+                    conversation.Users.Add(user2);
+                    appDb.Conversations.Add(conversation);
+                    await appDb.SaveChangesAsync();
+                }
+
+                return new ConversationDTO
+                {
+                    Id = conversation.Id
+               };
+            } 
+            else
+            {
+                return null;
+            }
+        }
+
+
+
     }
 }

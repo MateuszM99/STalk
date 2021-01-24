@@ -60,7 +60,9 @@ namespace Services
         }
         public async Task<SignInResponse> SignIn(SignInModel model, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
+            
             var user = await userManager.FindByNameAsync(model.Username);
+           
             if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await userManager.GetRolesAsync(user);

@@ -14,7 +14,7 @@ function ChatNavbar() {
     const history = useHistory();
     const [friendsRequests,setFriendsRequests] = useState(null);
     const [user,setUser] = useState(null);
-    const [chatId,setChatId] = useState(2);
+    const [chatId,setChatId] = useState("show");
 
     const signOut = () => {
         localStorage.setItem("userData",'')
@@ -27,21 +27,18 @@ function ChatNavbar() {
             let response = await getUsersFriendsRequestsRequest();
             console.log(response.data.addToContactRequests);
             setFriendsRequests(response.data.addToContactRequests); 
-            //setUserFindMessage(response.data.message);
         } catch(err) {
-           // setUserFindMessage("Invalid input")
         }
     }
 
     useEffect(() => {
         async function getData(){
             try{
-                let response = await getProfileRequest();
+                let response = await getProfileRequest();               
                 console.log(response.data);
                 setUser(response.data); 
                 // set latest chatId
             } catch(err) {
-                //setUserFindMessage("Invalid input")
             }
         }
         getData();

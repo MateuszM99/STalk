@@ -59,6 +59,12 @@ namespace Services.Hubs
             List<ConversationDTO> conversations = _chatService.GetConversations(userId);
             await Clients.Client(Context.ConnectionId).SendAsync("UpdateConversations", conversations);
         }
+        public async Task GetConversationOfUsers(string userId2)
+        {
+            string userId1 = _httpContextAccessor.HttpContext.Request.Query["userId"];
+            ConversationDTO conversationDTO = await _chatService.GetConversationOfUsers(userId1, userId2);
+            await Clients.Client(Context.ConnectionId).SendAsync("");
+        }
         public override async Task OnConnectedAsync()
         {
             //Context.QueryString

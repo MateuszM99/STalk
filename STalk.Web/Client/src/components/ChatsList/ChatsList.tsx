@@ -10,6 +10,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import * as signalR from "@microsoft/signalr";
 import { connect } from 'http2';
 import * as worker from '../../registerServiceWorker'
+import {getUsersContactsRequest} from '../../services/api/ContactsRequests'
 
 let conversationsCount: number;
 let connection: signalR.HubConnection;
@@ -19,11 +20,13 @@ let connection: signalR.HubConnection;
 class ChatsList extends React.Component {
     state = {
         conversationsCount: 0,
-        conversations: {}
+        conversations: [],
+        friends: [],
+        searchString: '',
     }
     constructor(props) {
         super(props);
-        worker.createSignalR().then((resolve) => {
+        /*worker.createSignalR().then((resolve) => {
             connection = resolve
             connection.invoke("GetConversationsCount");
             connection.invoke("GetConversations");
@@ -38,7 +41,25 @@ class ChatsList extends React.Component {
                 console.log(conversations);
                 this.setState({ conversations: conversations })
             })
-        })
+        })*/
+    }
+
+    async componentDidMount(){
+             
+    try{
+        let response = await getUsersContactsRequest();
+        this.setState({friends: response.data.users})          
+        //setUserFindMessage(response.data.message);
+        console.log(response.data.users);
+    } catch(err) {
+        //setUserFindMessage("Invalid input")
+    }       
+              
+    }
+
+    handleSearchChange = (e) => {
+        console.log(this.state.searchString);
+        this.setState({searchString : e.target.value});
     }
     
     render() {
@@ -54,10 +75,15 @@ class ChatsList extends React.Component {
                 <div className="search-box">
                     <div className="input-wrapper">
                         <SearchIcon style={{ marginLeft: '10px' }} />
-                        <input placeholder="Search here" type="text" />
+                        <input placeholder="Search here" type="text" onChange={this.handleSearchChange}/>
                     </div>
                 </div>
-                <FriendChat />
+                {this.state.searchString == '' ? this.state.conversations?.map(conversation => 
+                    <FriendChat key={conversation.id} conversationId={conversation.id} lastMessage={conversation.lastMessage} recieverName={conversation.recieverName}/>
+                ) : null}
+                {this.state.searchString != '' ? this.state.friends?.filter(friend => friend.username.includes(this.state.searchString)).map(friend =>
+                    <FriendChat key={friend.id} recieverName={friend.username} reciverId={friend.id}/>
+                    ) : null}
             </div>
         )
     }

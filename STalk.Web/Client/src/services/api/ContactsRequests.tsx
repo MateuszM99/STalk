@@ -2,20 +2,20 @@ import axios from 'axios'
 
 const baseUrl = 'https://localhost:44338/api';
 
-// const token = JSON.parse(localStorage.getItem('userData'));
+ const token = JSON.parse(localStorage.getItem('userData')) == null ? null : JSON.parse(localStorage.getItem('userData')).token;
 
-// if(token.token != null){
-//     console.log();
-//     axios.interceptors.request.use(
-//         config => {
-//         config.headers.authorization = `Bearer ${token}`;
-//         return config;
-//         },
-//         error => {
-//         return Promise.reject(error);
-//         }
-//     );
-// }
+ if(token != null){
+     console.log();
+     axios.interceptors.request.use(
+         config => {
+         config.headers.authorization = `Bearer ${token}`;
+         return config;
+         },
+         error => {
+         return Promise.reject(error);
+         }
+     );
+ }
 
 export function getUsersRequest(searchString){
     return axios.get(`${baseUrl}/user/getUsers?searchString=${searchString}`);

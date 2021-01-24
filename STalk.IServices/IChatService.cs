@@ -17,5 +17,6 @@ namespace IServices
         int GetConversationCount(string userId);
         Task RemoveUserConnectionId(string connectionId);
         List<ConversationDTO> GetConversations(string userId);
+        Task<ConversationDTO> GetConversationOfUsers(string userId1, string userId2);
     }
 }

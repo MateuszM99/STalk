@@ -14,7 +14,7 @@ class MainWindow extends React.Component {
 
     constructor(props) {
         super(props);
-        if (localStorage.getItem('userData') != null) {
+        /*if (localStorage.getItem('userData') != null) {
             worker.createSignalR().then((resolve) => {
                 connection = resolve
                 connection.invoke("GetMyMessages");
@@ -27,18 +27,18 @@ class MainWindow extends React.Component {
                     console.log("Odebrano wiadomość od: " + senderId)
                     console.log("Wiadomość: " + message)
                 });
-            })
+            })*/
 
             //connection = worker.createSignalR();
 
             //connection.invoke("SendMessage", friendId, message);
-            console.log(connection)
+            //console.log(connection)
             //connection.on("SendPrivateMessage")
             //connection.on("recievedPrivate", (fromUser, message) => {
             //    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             //    var encodedMsg = fromUser + " says " + msg;
             //});
-        }
+        //}
     }
 
     render() {
@@ -46,14 +46,14 @@ class MainWindow extends React.Component {
             <div className="container fill">
                 <div className="row fill no-gutters">
                     <ChatNavbar />
-                    <Route exact path={"/sTalk/chat/:chatId"}>
+                    <Route path={"/sTalk/chat/:chatId"}>
                         <ChatsList {...conversationsCount}/>
                         <ChatWindow/>
                     </Route>
-                    <Route exact path={"/sTalk/friends"}>
+                    <Route path="/sTalk/friends">
                         <FriendsWindow/>
                     </Route>
-                    <Route exact path={"/sTalk/profile"}>
+                    <Route path="/sTalk/profile">
                         <ProfileWindow/>
                     </Route>        
                 </div>
