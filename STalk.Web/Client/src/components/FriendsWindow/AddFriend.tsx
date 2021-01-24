@@ -5,19 +5,10 @@ interface Props{
     username: string;
     status : number;
     image: File
+    onSend : (username,status) => void;
 }
 
-export const AddFriend: React.FC<Props> = ({username,status,image}) => {
-
-    const sendFriendsRequest = async (username) => {
-        console.log(username);
-
-        try{
-            let response = await addToContactsRequest(username); 
-        } catch(err) {
-            
-        }
-    }
+export const AddFriend: React.FC<Props> = ({username,status,image,onSend}) => {
 
     let buttonText = "Add";
     if(status == 0){
@@ -34,7 +25,7 @@ export const AddFriend: React.FC<Props> = ({username,status,image}) => {
         <div>
             <img className="profile-image" src={`data:image/jpeg;base64,${image}`} alt=""/>
             <p>{username}</p>
-            <button className="friends__action__button" onClick={() => sendFriendsRequest(username)}>{buttonText}</button>
+            <button className="friends__action__button" onClick={() => onSend(username,status)}>{buttonText}</button>
         </div>
     )
 }

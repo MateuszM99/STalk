@@ -40,3 +40,7 @@ export function acceptAddToContactsRequest(addRequestId){
 export function declineAddToContactsRequest(addRequestId){
     return axios.post(`${baseUrl}/user/declineAddToContacts`,{Long : addRequestId});
 }
+
+export function deleteUserFromContactsRequest(userToDeleteId){
+    return axios.post(`${baseUrl}/user/deleteFromContacts`,{String : userToDeleteId});
+}

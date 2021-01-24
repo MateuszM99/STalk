@@ -45,6 +45,7 @@ namespace Services
                 if (await AddUserToContactList(userAcceptingRequest, userSendingRequest.Id) && await AddUserToContactList(userSendingRequest, userAcceptingRequest.Id))
                 {
                     appDb.AddToContactRequests.Remove(addRequest);
+                    await appDb.SaveChangesAsync();
                     return new ContactsResponse { Message = "User added to contacts list", ResponseStatus = Status.Success };
                 }
             }
@@ -177,7 +178,7 @@ namespace Services
                 };
 
                 var requestExists = await appDb.AddToContactRequests.Where(u => u.UserFromId == userFrom.Id && u.UserToId == userTo.Id).AnyAsync();
-                var userContactsList = await appDb.ContactLists.FirstOrDefaultAsync(x => x.UserId == userFrom.Id);
+                var userContactsList = await appDb.ContactLists.Include(c => c.Contacts).ThenInclude(u => u.User).FirstOrDefaultAsync(x => x.UserId == userFrom.Id);
                 
                 // Check if user already exists in the others contact list
                 if (userContactsList != null)
@@ -198,6 +199,44 @@ namespace Services
                 return new ContactsResponse { Message = "You already sent request to that user", ResponseStatus = Status.Error };
             }
             return new ContactsResponse { Message = "User you are trying to add does not exist", ResponseStatus = Status.Error };
+        }
+
+        public async Task<ContactsResponse> DeleteFromContactsList(User user, string usernameToDelete)
+        {
+            var userDelete = await userManager.FindByNameAsync(usernameToDelete);           
+
+            if (user != null && userDelete != null)
+            {
+                if(await DeleteUserFromContacts(userDelete,user.Id) && await DeleteUserFromContacts(user, userDelete.Id))
+                {
+                    return new ContactsResponse { Message = "Contact deleted successfully", ResponseStatus = Status.Success };
+                }
+            }
+            return new ContactsResponse { Message = "User not found", ResponseStatus = Status.Error };
+        }
+
+        private async Task<bool> DeleteUserFromContacts(User userToDelete, string contactsListUserId)
+        {
+            if (userToDelete != null && !String.IsNullOrWhiteSpace(contactsListUserId))
+            {
+                var userContactsList = await appDb.ContactLists
+                        .Where(u => u.UserId == contactsListUserId)
+                        .Include(c => c.Contacts)
+                        .FirstOrDefaultAsync();
+
+                if (userContactsList != null)
+                {
+                    var contactUserToDelete = userContactsList.Contacts.Where(u => u.UserId == userToDelete.Id).FirstOrDefault();
+                    if (contactUserToDelete != null)
+                    {
+                        appDb.ContactListUsers.Remove(contactUserToDelete);
+                        await appDb.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
+                }                
+            }
+            return false;
         }
 
         private async Task<bool> AddUserToContactList(User userToAdd,string contactsListUserId)

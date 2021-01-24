@@ -229,5 +229,22 @@ namespace STalk.Api.Controllers
             return StatusCode(StatusCodes.Status400BadRequest);
         }
 
+        [HttpPost]
+        [Route("deleteFromContacts")]
+        public async Task<IActionResult> DeleteFromContactsRequest([FromBody] StringRequest userToDelete)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
+            {
+                ContactsResponse response = await contactsServices.DeleteFromContactsList(user, userToDelete.String);
+                if (response.ResponseStatus == Status.Success)
+                {
+                    return Ok(response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
     }
 }

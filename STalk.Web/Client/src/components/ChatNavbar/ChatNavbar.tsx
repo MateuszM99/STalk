@@ -8,6 +8,7 @@ import Badge from '@material-ui/core/Badge';
 import { Link,useHistory } from 'react-router-dom';
 import {getUsersFriendsRequestsRequest} from '../../services/api/ContactsRequests'
 import {getProfileRequest} from '../../services/api/ProfileRequests'
+import Condition from 'yup/lib/Condition';
 
 function ChatNavbar() {
 
@@ -25,7 +26,7 @@ function ChatNavbar() {
     const getUsersFriendsRequests = async() => {
         try{
             let response = await getUsersFriendsRequestsRequest();
-            console.log(response.data.addToContactRequests);
+            console.log('requests' + response.data.addToContactRequests);
             setFriendsRequests(response.data.addToContactRequests); 
         } catch(err) {
         }
@@ -34,16 +35,20 @@ function ChatNavbar() {
     useEffect(() => {
         async function getData(){
             try{
-                let response = await getProfileRequest();               
-                console.log(response.data);
+                let response = await getProfileRequest();                              
                 setUser(response.data); 
                 // set latest chatId
             } catch(err) {
             }
+            getUsersFriendsRequests();
         }
+        
+        if(user == null || friendsRequests == null){
+        console.log(user);
         getData();
+        }
 
-      },[]);
+      },[user,friendsRequests]);
 
     return (
         <div className="col-md-2 border-right" style={{background: '#285d80'}}>
