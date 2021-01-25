@@ -12,5 +12,6 @@ namespace Application.DTO
         public string RecieverName { get; set; }
         public string LastMessage { get; set; }
         public bool LastSendByMe { get; set; }
+        public bool NewMessage { get; set; }
     }
 }

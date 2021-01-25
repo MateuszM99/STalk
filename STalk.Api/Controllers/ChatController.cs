@@ -75,6 +75,20 @@ namespace STalk.Api.Controllers
             var file = await _chatService.GetFileFromDb(fileId);
             return File(file.FileContent, file.FileExtension);
         }
+        [HttpGet]
+        [Route("getChatName")]
+        public async Task<IActionResult> GetConversationName(string conversationId, string userId)
+        {
+            try
+            {
+                string conversationName = await _chatService.GetConversationName(conversationId, userId);
+                return Ok(conversationName);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
+        }
         //[HttpGet]
         //[Route("getConversationConv")]
         //public async Task<IActionResult> GetConversation(string conversationId)

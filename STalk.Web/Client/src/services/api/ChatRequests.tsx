@@ -20,10 +20,13 @@ const baseUrl = 'https://localhost:44338/api';
 export function getConversationRequest(userId){
     return axios.get(`${baseUrl}/chat/getConversation?userId2=${userId}`);
 
-}export function getFile(fileId){
+}
+export function getFile(fileId) {
     return axios.get(`${baseUrl}/chat/getFile?fileId=${fileId}`);
 }
-
+export function getConversationName(conversationId, userId) {
+    return axios.get(`${baseUrl}/chat/getChatName?conversationId=${conversationId}&userId=${userId}`);
+}
 export function saveFileAndAdd(data) {
     return axios.post(`${baseUrl}/chat/saveFile`, data, { headers: { 'Content-Type': 'multipart/form-data' }});
 }

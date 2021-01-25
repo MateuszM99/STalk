@@ -22,5 +22,7 @@ namespace IServices
         Task<List<MessageDTO>> GetConversationMessages(long conversationId, string userId);
         long AddFileToDb(byte[] fileContent, string ext, string userId);
         Task<File> GetFileFromDb(long fileId);
+        Task<string> GetConversationName(string conversationId, string userId);
+        Task AddUserToConversation(long conversationId, string userName, string userId);
     }
 }

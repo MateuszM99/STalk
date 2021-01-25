@@ -1,6 +1,9 @@
 import React, { useEffect, useState} from 'react';
 import { Route, Redirect } from 'react-router-dom'
 import jwt_decode from "jwt-decode";
+import * as worker from './registerServiceWorker';
+
+let connection: signalR.HubConnection;
 
 interface MyToken {
     name: string;
@@ -22,7 +25,10 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
                 localStorage.setItem('userData', null) 
                 setIsAuthenticated(false)
             } else {              
-                setIsAuthenticated(true);
+                worker.createSignalR().then((resolve) => {
+                    connection = resolve
+                    setIsAuthenticated(true);
+                });
             }
         } else {     
             console.log("User not found")
@@ -32,12 +38,10 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
     if (isAuthenticated == null) {
         console.log("Not authenticated");
-      return (
-          <div>Waiting</div>
+        return (
+            <div style={{ color: "#FFFFFF" }}>Loading...</div>
             )
     }
-    console.log("Funnyif: ")
-    console.log(isAuthenticated)
     return (
     <Route {...rest} render={props =>
       isAuthenticated  ? (

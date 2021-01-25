@@ -11,12 +11,15 @@ import * as worker from '../../registerServiceWorker'
 let connection: signalR.HubConnection;
 let conversationsCount: number;
 class MainWindow extends React.Component {
-
+    state = {
+        connectionConnected: false
+    }
     constructor(props) {
         super(props);
         if (localStorage.getItem('userData') != null) {
             worker.createSignalR().then((resolve) => {
                 connection = resolve
+                this.setState({ connectionConnected: true });
             });
         }
     }
@@ -25,7 +28,7 @@ class MainWindow extends React.Component {
         return (
             <div className="container fill">
                 <div className="row fill no-gutters">
-                    <ChatNavbar />
+                    <ChatNavbar connected={this.state.connectionConnected} />
                     <Route path={"/sTalk/chat/:chatId"}>
                         <ChatsList {...conversationsCount}/>
                         <ChatWindow/>

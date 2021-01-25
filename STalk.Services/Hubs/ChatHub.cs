@@ -38,7 +38,7 @@ namespace Services.Hubs
                 string recieverConnectionId = await _chatService.GetUserConnectionId(x);
                 if(recieverConnectionId != null)
                 {
-                    await Clients.Client(recieverConnectionId).SendAsync("RecievePrivateMessage", senderId, message);
+                    await Clients.Client(recieverConnectionId).SendAsync("RecievePrivateMessage", convId, message, senderId);
                 }
             });
             //if(recieverConnectionId == null)
@@ -71,17 +71,35 @@ namespace Services.Hubs
             int convoCount = _chatService.GetConversationCount(userId);
             await Clients.Client(Context.ConnectionId).SendAsync("UpdateConversationCount", convoCount);
         }
-        //public async Task GetConversations()
-        //{
-        //    string userId = _httpContextAccessor.HttpContext.Request.Query["userId"];
-        //    List<ConversationDTO> conversations = _chatService.GetConversations(userId);
-        //    await Clients.Client(Context.ConnectionId).SendAsync("UpdateConversations", conversations);
-        //}
+        public async Task GetConversations()
+        {
+            string userId = _httpContextAccessor.HttpContext.Request.Query["userId"];
+            List<ConversationDTO> conversations = _chatService.GetConversations(userId);
+            await Clients.Client(Context.ConnectionId).SendAsync("UpdateConversations", conversations);
+        }
         public async Task GetConversationOfUsers(string userId2)
         {
             string userId1 = _httpContextAccessor.HttpContext.Request.Query["userId"];
             ConversationDTO conversationDTO = await _chatService.GetConversationOfUsers(userId1, userId2);
             await Clients.Client(Context.ConnectionId).SendAsync("");
+        }
+        public async Task AddUserToConversation(string conversationId, string userName)
+        {
+            string userId = _httpContextAccessor.HttpContext.Request.Query["userId"];
+            if(long.TryParse(conversationId, out long convId))
+            {
+                await _chatService.AddUserToConversation(convId, userName, userId);
+
+                List<string> conversationUsers = _chatService.GetConversationUsers(convId);
+                await conversationUsers.ForEachAsync(async (x) =>
+                {
+                    string recieverConnectionId = await _chatService.GetUserConnectionId(x);
+                    if (recieverConnectionId != null)
+                    {
+                        await Clients.Client(recieverConnectionId).SendAsync("RecievePrivateMessage", "system", "New user added!");
+                    }
+                });
+            }
         }
         public override async Task OnConnectedAsync()
         {

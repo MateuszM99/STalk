@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect } from 'react'
 import './style.scss'
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
@@ -9,8 +9,10 @@ import { Link,useHistory } from 'react-router-dom';
 import {getUsersFriendsRequestsRequest} from '../../services/api/ContactsRequests'
 import {getProfileRequest} from '../../services/api/ProfileRequests'
 import Condition from 'yup/lib/Condition';
-
-function ChatNavbar() {
+interface Props {
+    connected: boolean;
+}
+export const ChatNavbar: React.FC<Props> = ({ connected }) => {
 
     const history = useHistory();
     const [friendsRequests,setFriendsRequests] = useState(null);
@@ -84,6 +86,9 @@ function ChatNavbar() {
                     <PowerSettingsNewIcon/>
                     <p>Sign out</p>
                 </div>
+            </div>
+            <div className="absolute-bottom">
+                <p className="connection-text">Connection established: {connected ? "true" : "false"}</p>
             </div>
         </div>
     )

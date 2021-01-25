@@ -17,7 +17,7 @@ export const Message: React.FC<Props> = ({ message, senderId, fileId }) => {
                 <div className="chat-bubble chat-bubble--left">
                     {message}
                     <div style={fileId == null ? { display: "none" } : { display: "block" }}>
-                        <a target="_blank" href={`https://localhost:44338/api/chat/getFile?fileId=${fileId}`} style={{ textDecoration: 'underline' }} download>File download link</a>
+                        <a target="_blank" href={`https://localhost:44338/api/chat/getFile?fileId=${fileId}`} style={{ textDecoration: 'underline' }} download>Download attachement</a>
                     </div>
                 </div>
             </div>

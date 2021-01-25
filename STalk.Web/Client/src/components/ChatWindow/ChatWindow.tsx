@@ -7,7 +7,7 @@ import AddIcon from '@material-ui/icons/Add';
 import * as worker from '../../registerServiceWorker'
 import {RouteComponentProps,Link,withRouter} from  "react-router-dom"
 import { connect } from 'net';
-import { saveFileAndAdd } from '../../services/api/ChatRequests'
+import { saveFileAndAdd, getConversationName } from '../../services/api/ChatRequests'
 let connection: signalR.HubConnection;
 
 type PathParamsType = {
@@ -25,7 +25,9 @@ class ChatWindow extends React.Component<PropsType> {
         message: "",
         messages: [],
         newMessage: true,
-        fileId: null
+        fileId: null,
+        conversationName: "",
+        newConversationUserName: ""
     }
 
     constructor(props) {
@@ -51,16 +53,27 @@ class ChatWindow extends React.Component<PropsType> {
         this.checkForEnterToSend = this.checkForEnterToSend.bind(this);
     }
 
-    componentDidMount(){
-        //if(this.state.chatId != this.props.match.params.chatId){
-        //    this.setState({chatId : this.props.match.params.chatId });
-        //}
+    componentDidMount() {
+        if(this.state.chatId != this.props.match.params.chatId){
+            this.setState({chatId : this.props.match.params.chatId });
+        }
+        this.setState({ userId: JSON.parse(localStorage.getItem('userData')).user.id });
+        console.log("userID: " + this.state.userId)
         // tu pobierasz konwersacje z tym id czatu
     }
 
     componentDidUpdate() {
         if(this.state.chatId != this.props.match.params.chatId){
-            this.setState({ chatId: this.props.match.params.chatId });
+            this.setState({ chatId: this.props.match.params.chatId }, () => {
+                console.log("userID: " + this.state.userId)
+                getConversationName(this.state.chatId, this.state.userId).then((response) => {
+                    if (response.status == 200) {
+                        console.log("ConversationName: " + response.data)
+                        this.setState({ conversationName: response.data })
+                        connection.invoke("GetConversationMessages", this.state.chatId)
+                    }
+                })
+            });
         }
         if (this.state.newMessage != false) {
             if (this.state.chatId != "show" && this.state.chatId != null) {
@@ -82,13 +95,28 @@ class ChatWindow extends React.Component<PropsType> {
             this.setState({ fileId: null })
         }
     }
+
+    addUserToConversation = () => {
+        connection.invoke("AddUserToConversation", this.state.chatId, this.state.newConversationUserName);
+        this.setState({ newConversationUserName: "" })
+    }
+
     clickedSend() {
         connection.invoke("SendMessage", this.state.chatId, this.state.message, this.state.fileId)
         this.setState({ message: "" })
         this.setState({fileId: null})
     }
+    checkForEneterInNewUser(event: React.KeyboardEvent) {
+        if (event.keyCode === 13) {
+            event.preventDefault()
+            this.addUserToConversation()
+        }
+    }
     handleChange(event) {
         this.setState({message: event.target.value})
+    }
+    handleNewUserChange = (event) => {
+        this.setState({ newConversationUserName: event.target.value })
     }
     sendAndAttachFile(e) {
         let formData = new FormData();
@@ -115,19 +143,20 @@ class ChatWindow extends React.Component<PropsType> {
                     <div className="friend-drawer no-gutters friend-drawer--grey">
                         <img className="profile-image" src="https://thumbs.dreamstime.com/b/default-avatar-profile-image-vector-social-media-user-icon-potrait-182347582.jpg" alt=""/>
                         <div className="text">
-                            <h6>Robo Cop</h6>                       
+                            <h6>{ this.state.conversationName }</h6>                       
                         </div>
                         <div className="add__to__conv">
                             <span>
-                            <input type="text"></input>
-                            <button className="add__to__conv__button">Add</button>
+                                <input type="text" placeholder="Dodaj nowego użytkownika" onChange={this.handleNewUserChange} onKeyDown={(event) => this.checkForEneterInNewUser(event)}></input>
+                                <button className="add__to__conv__button" onClick={this.addUserToConversation}>Add</button>
                             </span>                           
                         </div>
                     </div>
                 </div>
                 <div className="chat-panel overflow-auto flex">
                     {this.state.messages.map(message => {
-                        return message.sendByMe == true ? <Message message={message.message} senderId={message.senderId} fileId={message.fileId} /> : <ReplyMessage message={message.message} senderId={message.senderId} fileId={message.fileId}/>
+                        return message.sendByMe == true ? <Message message={message.message} senderId={message.senderId} fileId={message.fileId} /> :
+                            <ReplyMessage message={message.message} senderId={message.senderId} senderName={message.senderName} fileId={message.fileId} />
                         })
                     }
                 </div>

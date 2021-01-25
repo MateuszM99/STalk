@@ -58,12 +58,12 @@ function SignIn() {
                                 //setAxiosInterceptors(response.data);
                                 setSubmitting(false);
                                 resetForm();
-                                history.push("/sTalk/chat/show");
+                                history.push("/sTalk/chat/");
                             } catch(err){
                                 setSubmitting(false);
                                 resetForm();
                                 setStatus({
-                                    errorMessage : "Looks like either your username or password were incorrect or your email is not confirmed. Wanna try again?"
+                                    errorMessage : "Looks like either your username or password were incorrect. Wanna try again?"
                                 });
                             }                                                                                                                                                                                        
                         }                                  
