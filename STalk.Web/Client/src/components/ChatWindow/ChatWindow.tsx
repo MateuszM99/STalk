@@ -117,6 +117,12 @@ class ChatWindow extends React.Component<PropsType> {
                         <div className="text">
                             <h6>Robo Cop</h6>                       
                         </div>
+                        <div className="add__to__conv">
+                            <span>
+                            <input type="text"></input>
+                            <button className="add__to__conv__button">Add</button>
+                            </span>                           
+                        </div>
                     </div>
                 </div>
                 <div className="chat-panel overflow-auto flex">
